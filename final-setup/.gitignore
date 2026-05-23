@@ -1,0 +1,12 @@
+.env
+.idea/
+*.iml
+.vscode/
+
+project/target/
+project/.flattened-pom.xml
+
+docker-compose.override.yml
+
+.DS_Store
+Thumbs.db
