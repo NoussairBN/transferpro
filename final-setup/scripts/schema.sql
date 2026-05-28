@@ -48,31 +48,31 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- ─────────────────────────────────────────────────────────────
--- TRANSFERS
+-- TRANSFERS (Version corrigée pour JPA)
 -- ─────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS transfers (
-    id                  BIGSERIAL PRIMARY KEY,
-    tracking_code       VARCHAR(20)  NOT NULL UNIQUE,
-    sender_id           BIGINT NOT NULL REFERENCES users(id),
-    sender_name         VARCHAR(100) NOT NULL,
-    sender_phone        VARCHAR(20)  NOT NULL,
-    receiver_name       VARCHAR(100) NOT NULL,
-    receiver_phone      VARCHAR(20)  NOT NULL,
-    receiver_cin        VARCHAR(20),
-    amount              NUMERIC(15,2) NOT NULL CHECK (amount > 0),
-    fees                NUMERIC(10,2) NOT NULL DEFAULT 0.00,
-    total_amount        NUMERIC(15,2) NOT NULL,
-    currency            VARCHAR(3)   NOT NULL DEFAULT 'MAD',
-    sender_agency_id    BIGINT REFERENCES agencies(id),
-    receiver_agency_id  BIGINT REFERENCES agencies(id),
-    status              VARCHAR(20)  NOT NULL DEFAULT 'PENDING'
-                            CHECK (status IN ('PENDING','PAID','CANCELLED','EXPIRED')),
-    otp_code            VARCHAR(6),
-    otp_expires_at      TIMESTAMP,
-    notes               VARCHAR(500),
-    created_at          TIMESTAMP NOT NULL DEFAULT NOW(),
-    paid_at             TIMESTAMP,
-    cancelled_at        TIMESTAMP
+DROP TABLE IF EXISTS transfers CASCADE;
+
+CREATE TABLE transfers (
+    id                      BIGSERIAL PRIMARY KEY,
+    tracking_code           VARCHAR(50) NOT NULL UNIQUE,
+    amount                  NUMERIC(15,2) NOT NULL CHECK (amount >= 50 AND amount <= 50000),
+    fees                    NUMERIC(10,2) DEFAULT 0.00,
+    status                  VARCHAR(20) NOT NULL DEFAULT 'PENDING'
+                                CHECK (status IN ('PENDING','CONFIRMED','AVAILABLE','PAID','EXPIRED','CANCELLED')),
+    otp_code                VARCHAR(8),
+    sender_name             VARCHAR(100) NOT NULL,
+    sender_phone            VARCHAR(20),
+    receiver_name           VARCHAR(100) NOT NULL,
+    receiver_phone          VARCHAR(20) NOT NULL,
+    receiver_email          VARCHAR(100),
+    created_at              TIMESTAMP NOT NULL DEFAULT NOW(),
+    paid_at                 TIMESTAMP,
+    expires_at              TIMESTAMP,
+    notes                   VARCHAR(500),
+    version                 INTEGER DEFAULT 0,
+    sending_agency_id       BIGINT REFERENCES agencies(id),
+    receiving_agency_id     BIGINT REFERENCES agencies(id),
+    user_id                 BIGINT REFERENCES users(id)
 );
 
 -- ─────────────────────────────────────────────────────────────
@@ -93,9 +93,12 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 -- INDEX (performance)
 -- ─────────────────────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_transfers_tracking   ON transfers(tracking_code);
-CREATE INDEX IF NOT EXISTS idx_transfers_sender     ON transfers(sender_id);
+CREATE INDEX IF NOT EXISTS idx_transfers_otp        ON transfers(otp_code);
 CREATE INDEX IF NOT EXISTS idx_transfers_status     ON transfers(status);
 CREATE INDEX IF NOT EXISTS idx_transfers_created    ON transfers(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_transfers_sending    ON transfers(sending_agency_id);
+CREATE INDEX IF NOT EXISTS idx_transfers_receiving  ON transfers(receiving_agency_id);
+CREATE INDEX IF NOT EXISTS idx_transfers_user       ON transfers(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_user           ON audit_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_action         ON audit_logs(action);
 CREATE INDEX IF NOT EXISTS idx_audit_created        ON audit_logs(created_at DESC);
@@ -117,5 +120,12 @@ VALUES ('Admin', 'Système', 'admin@moneytransfer.ma', '0600000000',
         '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RK9BQ.5Bq',
         'ADMIN', 'VERIFIED', 'ACTIVE')
 ON CONFLICT DO NOTHING;
+
+-- Agent de test pour l'agence Casablanca
+INSERT INTO users (first_name, last_name, email, phone, password_hash, role, kyc_status, status, agency_id)
+VALUES ('Agent', 'Casablanca', 'agent@casablanca.ma', '0612345678',
+        '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RK9BQ.5Bq',
+        'AGENCY_AGENT', 'VERIFIED', 'ACTIVE', 1)
+ON CONFLICT (email) DO NOTHING;
 
 SELECT 'Schema créé avec succès !' as message;

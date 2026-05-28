@@ -12,8 +12,7 @@
     <name>Money Transfer JEE</name>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jakartaee.version>10.0.0</jakartaee.version>
         <hibernate.version>6.4.4.Final</hibernate.version>
@@ -57,13 +56,14 @@
             <version>2.16.1</version>
         </dependency>
 
-        <!-- ── Lombok (optionnel — réduit le boilerplate) ── -->
+        <!-- ── Lombok (COMMENTÉ - cause des problèmes avec NetBeans) ──
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
+        -->
 
         <!-- ── Tests ── -->
         <dependency>
@@ -83,6 +83,16 @@
     <build>
         <finalName>money-transfer</finalName>
         <plugins>
+            <!-- Compiler plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <release>21</release>
+                </configuration>
+            </plugin>
+
             <!-- WAR packaging -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
