@@ -138,31 +138,46 @@ money-transfer-setup/
 
 ## Etat actuel du projet
 
-Le projet est actuellement au stade **Sprint 1 termine**.
+Le projet est actuellement au stade **Sprints 1, 2 et 3 termines**.
 
 ### Ce qui est deja fait
 
+**Sprint 1 — DEV-1 (Setup & Fondations)**
 - environnement Java 21 / Maven / Docker pret
-- PostgreSQL, WildFly et PgAdmin demarrent via Docker Compose
-- build Maven OK
-- WAR deployable dans WildFly
+- PostgreSQL, WildFly et PgAdmin via Docker Compose
+- build Maven OK, WAR deployable dans WildFly
 - connexion a la base via la DataSource `MoneyTransferDS`
 - schema SQL cree automatiquement
 - endpoint `GET /money-transfer/api/health` fonctionnel
-- entites JPA de base deja creees
+- entites JPA : User, Agency, Transfer, AuditLog
 
-### Livrable atteint
+**Sprint 3 — DEV-2 (Module Transferts)**
+- TransferService : creation, calcul frais, OTP, machine a etats
+- TransferDAO, OTPService, FeeCalculatorService, NotificationService
+- API REST complete : POST/GET/pay/cancel/confirm/track
+- DTOs, exceptions metier
 
-Application deployable qui connecte la base de donnees.
+**Sprint 2 — DEV-3 (Module Auth & Utilisateurs)**
+- PasswordUtil (BCrypt), JWTUtil (Auth0), JWTAuthFilter
+- UserService : inscription, profil, changement mdp, suspension
+- AuthService : login → JWT, register avec connexion auto
+- API REST : POST /auth/login, POST /auth/register
+- API REST : GET/PUT /users/me, changement mdp, routes admin
+- 39 tests JUnit 5 + Mockito
+
+### Livrables atteints
+
+- Application deployable connectee a la base
+- API transferts fonctionnelle (creation, suivi, paiement OTP)
+- Authentification JWT fonctionnelle (login, register, profil)
 
 ### Ce qui reste pour la suite
 
-- login / register
-- JWT / autorisation
-- creation et suivi des transferts
-- CRUD agences
-- notifications
-- audit metier complet
+- CRUD agences (DEV-4 : AgencyService, AgencyResource)
+- Upload documents + PDF recus (DEV-5 : DocumentService, iText)
+- Notifications Email/SMS (DEV-6 : NotificationService reel)
+- Audit metier complet (DEV-6 : AuditLog service)
+- Interface JSF (DEV-5 : pages login, dashboard)
 
 ### Couches applicatives
 
