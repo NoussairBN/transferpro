@@ -7,29 +7,35 @@
 
     <persistence-unit name="MoneyTransferPU" transaction-type="JTA">
 
-        <!-- DataSource JNDI configurée dans WildFly -->
+        <!-- DataSource JNDI configured in WildFly -->
         <jta-data-source>java:/jdbc/MoneyTransferDS</jta-data-source>
 
-        <!-- Entités JPA -->
+        <!-- JPA entities -->
         <class>ma.transfert.model.User</class>
         <class>ma.transfert.model.Agency</class>
         <class>ma.transfert.model.Transfer</class>
         <class>ma.transfert.model.AuditLog</class>
 
+        <!-- DEV-5 entity -->
+        <class>ma.transfert.model.Document</class>
+
         <properties>
-            <!-- Hibernate dialect PostgreSQL -->
+
+            <!-- Schema is managed manually through scripts/schema.sql -->
             <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
+
+            <!-- PostgreSQL dialect -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
 
-            <!-- En dev : afficher les requêtes SQL dans les logs -->
+            <!-- Development SQL logs -->
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
 
-            <!-- Pool de connexions -->
-            <property name="hibernate.connection.pool_size" value="10"/>
-
-            <!-- Cache de second niveau désactivé pour la simplicité -->
+            <!-- Disable second-level cache for simplicity -->
             <property name="hibernate.cache.use_second_level_cache" value="false"/>
+
         </properties>
+
     </persistence-unit>
+
 </persistence>
