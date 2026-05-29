@@ -1,5 +1,6 @@
 package ma.transfert.service;
 
+import jakarta.inject.Inject;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import ma.transfert.dao.UserDAO;
@@ -21,12 +22,12 @@ public class AuthService {
     @EJB
     private UserDAO userDAO;
 
-    @EJB
+    @Inject
     private PasswordUtil passwordUtil;
 
-    @EJB
+    @Inject
     private JWTUtil jwtUtil;
-
+    
     @EJB
     private UserService userService;
 

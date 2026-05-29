@@ -67,4 +67,13 @@ public class TransferDAO extends BaseDAO<Transfer, Long> {
         BigDecimal result = query.getSingleResult();
         return result != null ? result : BigDecimal.ZERO;
     }
+    // Add this method to TransferDAO.java
+    public List<Transfer> findAll(int offset, int limit) {
+        return em.createQuery(
+        "SELECT t FROM Transfer t ORDER BY t.createdAt DESC",
+        Transfer.class)
+        .setFirstResult(offset)
+        .setMaxResults(limit)
+        .getResultList();
+    }
 }

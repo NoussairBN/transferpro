@@ -2,6 +2,7 @@ package ma.transfert.service;
 
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import ma.transfert.dao.UserDAO;
 import ma.transfert.exception.BusinessException;
 import ma.transfert.model.User;
@@ -21,7 +22,7 @@ public class UserService {
     @EJB
     private UserDAO userDAO;
 
-    @EJB
+    @Inject
     private PasswordUtil passwordUtil;
 
     // ─────────────────────────────────────────────────────────────────────────

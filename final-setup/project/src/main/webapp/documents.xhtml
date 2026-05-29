@@ -1,13 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<h:head xmlns:h="http://xmlns.jcp.org/jsf/html">
-    <title>TransferPro - Documents</title>
-    <link rel="stylesheet" href="resources/css/style.css"/>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>TransferPro - Mes Documents</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <style>
+        /* Styles pour harmoniser la page avec le thème sombre global */
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .documents-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .page-header {
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .page-title {
+            color: #38bdf8;
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+        }
+        .page-subtitle {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        /* Style des badges pour les statuts KYC/Documents */
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+        }
+        .badge-yellow { background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid #f59e0b; }
+        .badge-green { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; }
+        .badge-red { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444; }
+        
+        /* Personnalisation de la DataTable PrimeFaces en mode sombre */
+        .ui-datatable.custom-dark-table .ui-datatable-header,
+        .ui-datatable.custom-dark-table th {
+            background-color: #0f172a !important;
+            color: #38bdf8 !important;
+            border-color: #334155 !important;
+            font-weight: 600;
+            padding: 15px !important;
+        }
+        .ui-datatable.custom-dark-table tr {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            transition: background-color 0.2s;
+        }
+        .ui-datatable.custom-dark-table tr:hover {
+            background-color: #24334d !important;
+        }
+        .ui-datatable.custom-dark-table td {
+            border-color: #334155 !important;
+            padding: 14px 15px !important;
+        }
+    </style>
 </h:head>
-<h:body xmlns:h="http://xmlns.jcp.org/jsf/html">
-    <div class="container">
-        <h1>Documents</h1>
-        <p>Liste provisoire des documents uploadés.</p>
+
+<h:body>
+    <div class="documents-container">
+        
+        <div class="page-header">
+            <h1 class="page-title">Gestion de vos Documents</h1>
+            <p class="page-subtitle">Consultez l'historique et l'état de validation de l'ensemble de vos pièces justificatives importées.</p>
+        </div>
+
+        <h:form id="docsForm">
+            <p:dataTable value="#{kycBean.myDocuments}" 
+                         var="doc" 
+                         styleClass="custom-dark-table"
+                         emptyMessage="Aucun document n'a été trouvé dans votre dossier."
+                         paginator="true" 
+                         rows="10"
+                         paginatorPosition="bottom"
+                         rowsPerPageTemplate="5,10,20">
+                         
+                <p:column headerText="Nature du justificatif" sortBy="#{doc.type}" style="width: 25%;">
+                    <h:outputText value="#{doc.type}" style="font-weight: 600; color: #e2e8f0;" />
+                </p:column>
+                
+                <p:column headerText="Nom d'origine du fichier" style="width: 35%;">
+                    <h:outputText value="#{doc.originalName}" style="font-family: monospace; color: #cbd5e1;" />
+                </p:column>
+                
+                <p:column headerText="Statut de conformité" style="width: 20%; text-align: center;">
+                    <span class="status-badge #{doc.status == 'VALIDATED' ? 'badge-green' : (doc.status == 'REJECTED' ? 'badge-red' : 'badge-yellow')}">
+                        <h:outputText value="#{doc.status}" />
+                    </span>
+                </p:column>
+                
+                <p:column headerText="Date d'importation" sortBy="#{doc.uploadedAt}" style="width: 20%;">
+                    <h:outputText value="#{doc.uploadedAt}">
+                        <f:convertDateTime pattern="dd MMMM yyyy 'à' HH:mm" type="localDateTime" locale="fr_FR" />
+                    </h:outputText>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+        
     </div>
 </h:body>
 </html>

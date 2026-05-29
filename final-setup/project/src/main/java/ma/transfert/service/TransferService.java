@@ -182,7 +182,13 @@ public class TransferService {
         String uniquePart = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         return "TRF-" + datePart + "-" + uniquePart;
     }
-    
+
+    public List<TransferDTO> getTransfersByUser(Long userId, int page, int size) {
+        int offset = page * size;
+        List<Transfer> transfers = transferDAO.findByUser(userId, offset, size);
+        return transfers.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
     private TransferDTO convertToDTO(Transfer transfer) {
         TransferDTO dto = new TransferDTO();
         dto.setId(transfer.getId());
@@ -203,5 +209,11 @@ public class TransferService {
         }
         
         return dto;
+    }
+    // Add this method to TransferService.java
+    public List<TransferDTO> getAllTransfers(int page, int size) {
+       int offset = page * size;
+       List<Transfer> transfers = transferDAO.findAll(offset, size);
+       return transfers.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 }

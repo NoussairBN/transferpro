@@ -1,15 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<h:head xmlns:h="http://xmlns.jcp.org/jsf/html">
-    <title>TransferPro - KYC Upload</title>
-    <link rel="stylesheet" href="resources/css/style.css"/>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>TransferPro - Espace KYC</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <style>
+        /* Styles correctifs intégrés pour garantir la largeur et le thème sombre */
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .kyc-layout {
+            display: flex;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+        .kyc-sidebar {
+            flex: 1;
+            min-width: 380px;
+            background-color: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .kyc-main-content {
+            flex: 2;
+            background-color: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .page-title {
+            color: #38bdf8;
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        .form-control-custom {
+            width: 100%;
+            padding: 10px;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: #f8fafc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: #38bdf8;
+            color: #0f172a;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-submit:hover {
+            background-color: #0ea5e9;
+        }
+        /* Style personnalisé pour les badges de statut */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+        }
+        .badge-yellow { background-color: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
+        .badge-green { background-color: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+        .badge-red { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+        
+        /* Personnalisation de la DataTable PrimeFaces en mode sombre */
+        .ui-datatable.custom-dark-table .ui-datatable-header,
+        .ui-datatable.custom-dark-table th {
+            background-color: #0f172a !important;
+            color: #38bdf8 !important;
+            border-color: #334155 !important;
+            font-weight: 600;
+        }
+        .ui-datatable.custom-dark-table tr {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+        }
+        .ui-datatable.custom-dark-table td {
+            border-color: #334155 !important;
+            padding: 12px 15px !important;
+        }
+    </style>
 </h:head>
-<h:body xmlns:h="http://xmlns.jcp.org/jsf/html">
-    <div class="container">
-        <h1>Upload KYC</h1>
-        <p>Upload CNI, passeport ou justificatif de domicile.</p>
-        <input type="file"/>
-        <button>Envoyer</button>
+
+<h:body>
+    <div class="kyc-layout">
+        
+        <div class="kyc-sidebar">
+            <h1 class="page-title">Vérification KYC</h1>
+            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5; margin-bottom: 25px;">
+                Uploadez votre CNI, passeport ou justificatif de domicile pour faire valider votre compte par notre équipe de conformité.
+            </p>
+
+            <h:form enctype="multipart/form-data">
+                <div class="form-group">
+                    <h:outputLabel for="docType" value="Type de document :"/>
+                    <h:selectOneMenu id="docType" value="#{kycBean.selectedType}" required="true" styleClass="form-control-custom">
+                        <f:selectItem itemValue="" itemLabel="-- Choisir un type --"/>
+                        <f:selectItem itemValue="CNI_RECTO"         itemLabel="CIN Recto"/>
+                        <f:selectItem itemValue="CNI_VERSO"         itemLabel="CIN Verso"/>
+                        <f:selectItem itemValue="PASSPORT"          itemLabel="Passeport"/>
+                        <f:selectItem itemValue="PROOF_OF_ADDRESS"  itemLabel="Justificatif de domicile"/>
+                    </h:selectOneMenu>
+                </div>
+
+                <div class="form-group">
+                    <h:outputLabel for="fileUpload" value="Fichier (PDF, JPEG, PNG) :"/>
+                    <p:fileUpload id="fileUpload"
+                                  value="#{kycBean.uploadedFile}"
+                                  mode="simple"
+                                  accept=".pdf,.jpg,.jpeg,.png"
+                                  required="true"
+                                  styleClass="form-control-custom"
+                                  style="padding: 5px;"/>
+                </div>
+
+                <h:commandButton value="Envoyer le document"
+                                 action="#{kycBean.uploadDocument}"
+                                 styleClass="btn-submit"/>
+
+                <div style="margin-top: 15px;">
+                    <h:messages showSummary="true" showDetail="false"
+                                style="list-style: none; padding: 0; margin: 0;"
+                                errorStyle="color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 6px;"
+                                infoStyle="color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 10px; border-radius: 6px;"/>
+                </div>
+            </h:form>
+        </div>
+
+        <div class="kyc-main-content">
+            <h2 class="page-title" style="color: #f8fafc; font-size: 1.5rem; margin-bottom: 20px;">Suivi de mes soumissions</h2>
+            
+            <h:panelGroup id="documentsPanel">
+                <p:dataTable value="#{kycBean.myDocuments}" 
+                             var="doc" 
+                             styleClass="custom-dark-table"
+                             emptyMessage="Vous n'avez pas encore soumis de document réglementaire.">
+                             
+                    <p:column headerText="Nature du document" style="width: 25%;">
+                        <h:outputText value="#{doc.type}" style="font-weight: 600; color: #e2e8f0;" />
+                    </p:column>
+                    
+                    <p:column headerText="Nom du fichier importé" style="width: 35%;">
+                        <h:outputText value="#{doc.originalName}" style="font-family: monospace; color: #cbd5e1;" />
+                    </p:column>
+                    
+                    <p:column headerText="Statut actuel" style="width: 15%; text-align: center;">
+                        <span class="status-badge #{doc.status == 'VALIDATED' ? 'badge-green' : (doc.status == 'REJECTED' ? 'badge-red' : 'badge-yellow')}">
+                            <h:outputText value="#{doc.status}" />
+                        </span>
+                    </p:column>
+                    
+                    <p:column headerText="Soumis le" style="width: 25%;">
+                        <h:outputText value="#{doc.uploadedAt}">
+                            <f:convertDateTime pattern="dd MMMM yyyy 'à' HH:mm" type="localDateTime" locale="fr_FR" />
+                        </h:outputText>
+                    </p:column>
+                    
+                </p:dataTable>
+            </h:panelGroup>
+        </div>
+        
     </div>
 </h:body>
 </html>

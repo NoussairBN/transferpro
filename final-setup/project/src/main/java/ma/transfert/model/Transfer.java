@@ -178,4 +178,6 @@ public class Transfer implements Serializable {
     public void markAsAvailable() {
         this.status = TransferStatus.AVAILABLE;
     }
+
+ 
 }

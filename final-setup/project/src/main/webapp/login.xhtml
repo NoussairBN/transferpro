@@ -1,16 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<h:head xmlns:h="http://xmlns.jcp.org/jsf/html">
-    <title>TransferPro - Login</title>
-    <link rel="stylesheet" href="resources/css/style.css"/>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>TransferPro - Connexion</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #0d1117;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 40px;
+            width: 420px;
+        }
+        .login-card h1 {
+            color: #58a6ff;
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+        .login-card .subtitle {
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+        .field {
+            margin-bottom: 18px;
+        }
+        .field label {
+            display: block;
+            color: #c9d1d9;
+            font-size: 13px;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .field input {
+            width: 100%;
+            padding: 10px 14px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #c9d1d9;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .field input:focus { border-color: #58a6ff; }
+        .btn-login {
+            width: 100%;
+            padding: 11px;
+            background: #238636;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .btn-login:hover { background: #2ea043; }
+        .error-msg {
+            background: #2d1a1a;
+            border: 1px solid #f85149;
+            border-radius: 6px;
+            color: #f85149;
+            padding: 10px 14px;
+            font-size: 13px;
+            margin-top: 14px;
+        }
+    </style>
 </h:head>
-<h:body xmlns:h="http://xmlns.jcp.org/jsf/html">
-    <div class="card">
+<h:body>
+    <div class="login-card">
         <h1>TransferPro</h1>
-        <p>Connexion</p>
-        <input type="text" placeholder="Email"/>
-        <input type="password" placeholder="Mot de passe"/>
-        <button>Se connecter</button>
+        <p class="subtitle">Connectez-vous à votre espace</p>
+
+        <h:form id="loginForm">
+            <div class="field">
+                <h:outputLabel for="email" value="Adresse email"/>
+                <h:inputText id="email"
+                             value="#{loginBean.email}"
+                             placeholder="exemple@domaine.ma"
+                             required="true"/>
+            </div>
+            <div class="field">
+                <h:outputLabel for="password" value="Mot de passe"/>
+                <h:inputSecret id="password"
+                               value="#{loginBean.password}"
+                               placeholder="••••••••"
+                               required="true"/>
+            </div>
+            <h:commandButton value="Se connecter"
+                             action="#{loginBean.login}"
+                             styleClass="btn-login"/>
+            <h:messages styleClass="error-msg"
+                        showSummary="true"
+                        showDetail="false"/>
+        </h:form>
     </div>
 </h:body>
 </html>

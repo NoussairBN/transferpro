@@ -14,18 +14,18 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - mt_network
 
-  # WildFly - serveur d'application (construit avec PostgreSQL driver + DataSource)
+  # WildFly - serveur d'application
   wildfly:
     build:
-      context: ./docker/wildfly
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./docker/wildfly/Dockerfile
       args:
         POSTGRES_DB: ${POSTGRES_DB}
         POSTGRES_USER: ${POSTGRES_USER}
@@ -33,9 +33,15 @@ services:
         WILDFLY_ADMIN_USER: ${WILDFLY_ADMIN_USER}
         WILDFLY_ADMIN_PASSWORD: ${WILDFLY_ADMIN_PASSWORD}
     container_name: mt_wildfly
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "8080:8080"
       - "9990:9990"
+    volumes:
+      - ./uploads:/opt/jboss/uploads
     depends_on:
       postgres:
         condition: service_healthy

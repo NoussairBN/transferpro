@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>TransferPro - Reçus &amp; Transactions</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .receipts-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .page-header {
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .page-title {
+            color: #38bdf8;
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+        }
+        .page-subtitle {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-success { 
+            background-color: rgba(16, 185, 129, 0.15); 
+            color: #10b981; 
+            border: 1px solid #10b981; 
+        }
+        .badge-warning { 
+            background-color: rgba(245, 158, 11, 0.15); 
+            color: #f59e0b; 
+            border: 1px solid #f59e0b; 
+        }
+        .badge-info { 
+            background-color: rgba(56, 189, 248, 0.15); 
+            color: #38bdf8; 
+            border: 1px solid #38bdf8; 
+        }
+        .badge-danger { 
+            background-color: rgba(239, 68, 68, 0.15); 
+            color: #ef4444; 
+            border: 1px solid #ef4444; 
+        }
+        
+        /* PrimeFaces Dark Customization */
+        .ui-datatable.custom-dark-table {
+            background-color: #1e293b !important;
+        }
+        .ui-datatable.custom-dark-table th {
+            background-color: #0f172a !important;
+            color: #38bdf8 !important;
+            border-color: #334155 !important;
+            padding: 15px !important;
+            font-weight: 600 !important;
+        }
+        .ui-datatable.custom-dark-table tr {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+        }
+        .ui-datatable.custom-dark-table tr.ui-widget-content {
+            background-color: #1e293b !important;
+        }
+        .ui-datatable.custom-dark-table td {
+            border-color: #334155 !important;
+            padding: 12px 15px !important;
+        }
+        .ui-datatable.custom-dark-table .ui-datatable-even {
+            background-color: #1a2538 !important;
+        }
+        .btn-action {
+            margin-right: 8px !important;
+        }
+        .ui-dialog .ui-dialog-content {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+        }
+        .ui-dialog .ui-dialog-titlebar {
+            background-color: #0f172a !important;
+            color: #38bdf8 !important;
+            border-bottom: 1px solid #334155 !important;
+        }
+        .ui-dialog .ui-dialog-titlebar-close {
+            background-color: transparent !important;
+            color: #94a3b8 !important;
+        }
+        .ui-button-outlined {
+            background: transparent !important;
+        }
+        .ui-button-info {
+            color: #38bdf8 !important;
+            border-color: #38bdf8 !important;
+        }
+        .ui-button-success {
+            background-color: #10b981 !important;
+            border-color: #10b981 !important;
+            color: white !important;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        .amount-highlight {
+            font-weight: 600;
+            color: #38bdf8;
+        }
+        .tracking-code {
+            font-family: monospace;
+            font-weight: bold;
+            color: #cbd5e1;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="receipts-container">
+        
+        <div class="page-header">
+            <h1 class="page-title">Historique des Transactions &amp; Reçus</h1>
+            <p class="page-subtitle">Visualisez vos flux financiers et téléchargez vos reçus d'opérations officiels au format PDF.</p>
+        </div>
+
+        <h:form id="receiptsForm">
+            <p:dataTable 
+                value="#{receiptBean.userTransfers}" 
+                var="tx" 
+                styleClass="custom-dark-table"
+                emptyMessage="Aucune transaction trouvée"
+                rows="10"
+                paginator="true"
+                paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                rowsPerPageTemplate="5,10,20">
+                
+                <p:column headerText="Référence" style="width: 15%;">
+                    <h:outputText value="#{tx.trackingCode}" styleClass="tracking-code" />
+                </p:column>
+                
+                <p:column headerText="Expéditeur" style="width: 15%;">
+                    <h:outputText value="#{tx.senderName}" style="color: #f8fafc;" />
+                </p:column>
+                
+                <p:column headerText="Bénéficiaire" style="width: 15%;">
+                    <h:outputText value="#{tx.receiverName}" style="color: #f8fafc;" />
+                </p:column>
+                
+                <p:column headerText="Montant" style="width: 10%;">
+                    <h:outputText value="#{tx.amount} MAD" styleClass="amount-highlight" />
+                </p:column>
+                
+                <p:column headerText="Frais" style="width: 8%;">
+                    <h:outputText value="#{tx.fees} MAD" style="color: #94a3b8;" />
+                </p:column>
+                
+                <p:column headerText="Total" style="width: 10%;">
+                    <h:outputText value="#{tx.totalAmount} MAD" styleClass="amount-highlight" />
+                </p:column>
+                
+                <p:column headerText="Date Création" style="width: 12%;">
+                    <h:outputText value="#{tx.createdAt}" style="color: #94a3b8;">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Statut" style="width: 10%; text-align: center;">
+                    <span class="status-badge #{tx.status == 'PAID' ? 'badge-success' : (tx.status == 'AVAILABLE' ? 'badge-info' : (tx.status == 'EXPIRED' ? 'badge-danger' : 'badge-warning'))}">
+                        #{tx.status}
+                    </span>
+                </p:column>
+                
+                <p:column headerText="Actions" style="width: 15%; text-align: center;">
+                    <p:commandButton 
+                        icon="pi pi-eye" 
+                        update=":txDetailDialog" 
+                        oncomplete="PF('txDialog').show()" 
+                        styleClass="ui-button-outlined ui-button-info btn-action"
+                        title="Voir les détails">
+                        <f:setPropertyActionListener value="#{tx}" target="#{receiptBean.selectedTransfer}" />
+                    </p:commandButton>
+                    
+                    <p:commandButton 
+                        icon="pi pi-file-pdf" 
+                        actionListener="#{receiptBean.downloadReceipt(tx)}" 
+                        ajax="false"
+                        styleClass="ui-button-header ui-button-success"
+                        title="Télécharger le reçu PDF" />
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+    </div>
+
+    <!-- Dialog for transaction details -->
+    <p:dialog 
+        header="Détails de la Transaction" 
+        widgetVar="txDialog" 
+        modal="true" 
+        showEffect="fade" 
+        hideEffect="fade" 
+        resizable="false" 
+        draggable="true"
+        id="txDetailDialog" 
+        width="550px"
+        height="auto">
+        
+        <h:panelGroup rendered="#{not empty receiptBean.selectedTransfer}" style="display: block; padding: 15px;">
+            
+            <!-- Header with status -->
+            <div style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #334155;">
+                <span class="status-badge #{receiptBean.selectedTransfer.status == 'PAID' ? 'badge-success' : (receiptBean.selectedTransfer.status == 'AVAILABLE' ? 'badge-info' : (receiptBean.selectedTransfer.status == 'EXPIRED' ? 'badge-danger' : 'badge-warning'))}" 
+                      style="font-size: 1rem; padding: 8px 20px;">
+                    Statut: #{receiptBean.selectedTransfer.status}
+                </span>
+            </div>
+            
+            <!-- Transaction details in 2 columns -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Référence:</strong></p>
+                    <p style="margin: 8px 0; font-family: monospace; color: #cbd5e1;">#{receiptBean.selectedTransfer.trackingCode}</p>
+                    
+                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Expéditeur:</strong></p>
+                    <p style="margin: 8px 0; color: #f8fafc;">#{receiptBean.selectedTransfer.senderName}</p>
+                    
+                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Téléphone Exp:</strong></p>
+                    <p style="margin: 8px 0; color: #f8fafc;">#{receiptBean.selectedTransfer.senderPhone != null ? receiptBean.selectedTransfer.senderPhone : '-'}</p>
+                    
+                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Montant:</strong></p>
+                    <p style="margin: 8px 0; font-size: 1.2rem; font-weight: bold; color: #38bdf8;">#{receiptBean.selectedTransfer.amount} MAD</p>
+                </div>
+                
+                <div>
+                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Bénéficiaire:</strong></p>
+                    <p style="margin: 8px 0; color: #f8fafc;">#{receiptBean.selectedTransfer.receiverName}</p>
+                    
+                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Téléphone Bénéf:</strong></p>
+                    <p style="margin: 8px 0; color: #f8fafc;">#{receiptBean.selectedTransfer.receiverPhone}</p>
+                    
+                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Frais:</strong></p>
+                    <p style="margin: 8px 0; color: #f8fafc;">#{receiptBean.selectedTransfer.fees} MAD</p>
+                    
+                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Total à payer:</strong></p>
+                    <p style="margin: 8px 0; font-size: 1.2rem; font-weight: bold; color: #f59e0b;">#{receiptBean.selectedTransfer.totalAmount} MAD</p>
+                </div>
+            </div>
+            
+            <!-- Dates section -->
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #334155;">
+                <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Date de création:</strong> 
+                    <h:outputText value="#{receiptBean.selectedTransfer.createdAt}" style="color: #94a3b8;">
+                        <f:convertDateTime pattern="dd/MM/yyyy à HH:mm" />
+                    </h:outputText>
+                </p>
+                
+                <p style="margin: 8px 0;" rendered="#{not empty receiptBean.selectedTransfer.paidAt}">
+                    <strong style="color: #38bdf8;">Date de paiement:</strong> 
+                    <h:outputText value="#{receiptBean.selectedTransfer.paidAt}" style="color: #10b981;">
+                        <f:convertDateTime pattern="dd/MM/yyyy à HH:mm" />
+                    </h:outputText>
+                </p>
+                
+                <p style="margin: 8px 0;" rendered="#{not empty receiptBean.selectedTransfer.expiresAt}">
+                    <strong style="color: #38bdf8;">Date d'expiration:</strong> 
+                    <h:outputText value="#{receiptBean.selectedTransfer.expiresAt}" style="color: #ef4444;">
+                        <f:convertDateTime pattern="dd/MM/yyyy à HH:mm" />
+                    </h:outputText>
+                </p>
+            </div>
+            
+            <!-- Notes if any -->
+            <p style="margin: 15px 0 8px 0;" rendered="#{not empty receiptBean.selectedTransfer.notes}">
+                <strong style="color: #38bdf8;">Notes:</strong><br/>
+                <span style="color: #94a3b8;">#{receiptBean.selectedTransfer.notes}</span>
+            </p>
+            
+            <!-- Agency info if available -->
+            <div rendered="#{not empty receiptBean.selectedTransfer.sendingAgency}" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;">
+                <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Agence émettrice:</strong> 
+                    <span style="color: #f8fafc;">#{receiptBean.selectedTransfer.sendingAgency.name}</span>
+                </p>
+            </div>
+            
+        </h:panelGroup>
+        
+        <!-- Empty state if no transfer selected -->
+        <h:panelGroup rendered="#{empty receiptBean.selectedTransfer}" style="display: block; padding: 40px; text-align: center;">
+            <p style="color: #94a3b8;">Sélectionnez une transaction pour voir les détails</p>
+        </h:panelGroup>
+        
+    </p:dialog>
+
+</h:body>
+</html>
