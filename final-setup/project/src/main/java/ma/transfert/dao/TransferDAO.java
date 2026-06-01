@@ -67,7 +67,6 @@ public class TransferDAO extends BaseDAO<Transfer, Long> {
         BigDecimal result = query.getSingleResult();
         return result != null ? result : BigDecimal.ZERO;
     }
-    // Add this method to TransferDAO.java
     public List<Transfer> findAll(int offset, int limit) {
         return em.createQuery(
         "SELECT t FROM Transfer t ORDER BY t.createdAt DESC",
@@ -75,5 +74,66 @@ public class TransferDAO extends BaseDAO<Transfer, Long> {
         .setFirstResult(offset)
         .setMaxResults(limit)
         .getResultList();
+    }
+
+    // ─── DEV-4 : Statistiques par agence (Dashboard) ────────────────────────
+
+    /**
+     * Compte les transferts d'une agence, filtrés par statut (envoi ou réception).
+     */
+    public long countByAgencyAndStatus(Long agencyId, TransferStatus status) {
+        TypedQuery<Long> query = em.createQuery(
+            "SELECT COUNT(t) FROM Transfer t WHERE (t.sendingAgency.id = :agencyId OR t.receivingAgency.id = :agencyId) AND t.status = :status",
+            Long.class);
+        query.setParameter("agencyId", agencyId);
+        query.setParameter("status", status);
+        return query.getSingleResult();
+    }
+
+    /**
+     * Compte tous les transferts d'une agence (envoi + réception).
+     */
+    public long countAllByAgency(Long agencyId) {
+        TypedQuery<Long> query = em.createQuery(
+            "SELECT COUNT(t) FROM Transfer t WHERE t.sendingAgency.id = :agencyId OR t.receivingAgency.id = :agencyId",
+            Long.class);
+        query.setParameter("agencyId", agencyId);
+        return query.getSingleResult();
+    }
+
+    /**
+     * Volume total envoyé par une agence (transferts payés).
+     */
+    public BigDecimal getTotalVolumeSentByAgency(Long agencyId) {
+        TypedQuery<BigDecimal> query = em.createQuery(
+            "SELECT COALESCE(SUM(t.amount), 0) FROM Transfer t WHERE t.sendingAgency.id = :agencyId AND t.status = :status",
+            BigDecimal.class);
+        query.setParameter("agencyId", agencyId);
+        query.setParameter("status", TransferStatus.PAID);
+        return query.getSingleResult();
+    }
+
+    /**
+     * Volume total reçu par une agence (transferts payés).
+     */
+    public BigDecimal getTotalVolumeReceivedByAgency(Long agencyId) {
+        TypedQuery<BigDecimal> query = em.createQuery(
+            "SELECT COALESCE(SUM(t.amount), 0) FROM Transfer t WHERE t.receivingAgency.id = :agencyId AND t.status = :status",
+            BigDecimal.class);
+        query.setParameter("agencyId", agencyId);
+        query.setParameter("status", TransferStatus.PAID);
+        return query.getSingleResult();
+    }
+
+    /**
+     * Total des frais collectés par une agence (transferts envoyés et payés).
+     */
+    public BigDecimal getTotalFeesByAgency(Long agencyId) {
+        TypedQuery<BigDecimal> query = em.createQuery(
+            "SELECT COALESCE(SUM(t.fees), 0) FROM Transfer t WHERE t.sendingAgency.id = :agencyId AND t.status = :status",
+            BigDecimal.class);
+        query.setParameter("agencyId", agencyId);
+        query.setParameter("status", TransferStatus.PAID);
+        return query.getSingleResult();
     }
 }

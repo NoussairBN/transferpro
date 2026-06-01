@@ -3,9 +3,9 @@
 --  Exécuter avec : psql -U mt_user -d money_transfer_db -f schema.sql
 -- =============================================================
 
--- Extensions
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+-- Extensions PostgreSQL non compatibles avec Oracle SQL
+-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ─────────────────────────────────────────────────────────────
 -- AGENCIES
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- ─────────────────────────────────────────────────────────────
 -- TRANSFERS (Version corrigée pour JPA)
 -- ─────────────────────────────────────────────────────────────
-DROP TABLE IF EXISTS transfers CASCADE;
+DROP TABLE IF EXISTS transfers;
 
 CREATE TABLE transfers (
     id                      BIGSERIAL PRIMARY KEY,
@@ -111,21 +111,20 @@ CREATE INDEX IF NOT EXISTS idx_audit_created        ON audit_logs(created_at DES
 INSERT INTO agencies (code, name, address, city, cash_balance, daily_limit) VALUES
   ('AGC-CASA-001', 'Agence Casablanca Centre',  'Bd Mohammed V, Casablanca',   'Casablanca', 250000.00, 500000.00),
   ('AGC-RABAT-001','Agence Rabat Agdal',         'Av. Fal Ould Oumeir, Rabat',  'Rabat',      180000.00, 500000.00),
-  ('AGC-FES-001',  'Agence Fès Médina',          'Rue Serrajine, Fès',          'Fès',        120000.00, 300000.00)
-ON CONFLICT DO NOTHING;
+    ('AGC-FES-001',  'Agence Fès Médina',          'Rue Serrajine, Fès',          'Fès',        120000.00, 300000.00);
 
 -- Admin par défaut (mot de passe: Admin#1234 — BCrypt)
 INSERT INTO users (first_name, last_name, email, phone, password_hash, role, kyc_status, status)
 VALUES ('Admin', 'Système', 'admin@moneytransfer.ma', '0600000000',
         '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RK9BQ.5Bq',
         'ADMIN', 'VERIFIED', 'ACTIVE')
-ON CONFLICT DO NOTHING;
+;
 
 -- Agent de test pour l'agence Casablanca
 INSERT INTO users (first_name, last_name, email, phone, password_hash, role, kyc_status, status, agency_id)
 VALUES ('Agent', 'Casablanca', 'agent@casablanca.ma', '0612345678',
         '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RK9BQ.5Bq',
         'AGENCY_AGENT', 'VERIFIED', 'ACTIVE', 1)
-ON CONFLICT (email) DO NOTHING;
+;
 
 SELECT 'Schema créé avec succès !' as message;
