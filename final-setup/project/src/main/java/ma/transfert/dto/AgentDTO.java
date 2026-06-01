@@ -3,10 +3,6 @@ package ma.transfert.dto;
 import ma.transfert.model.User.AccountStatus;
 import java.time.LocalDateTime;
 
-/**
- * DEV-4 — DTO pour lister les agents d'une agence.
- * Retourne les infos publiques sans exposer le hash du mot de passe.
- */
 public class AgentDTO {
 
     private Long id;

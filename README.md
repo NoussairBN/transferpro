@@ -11,7 +11,7 @@
 | **DEV-1** | Architecte / Lead | Setup Maven, Docker, Entités JPA, Schema SQL | ✅ Sprint 1 terminé |
 | **DEV-2** | Module Transferts | TransferService, TransferDAO, API REST, OTP, Frais | ✅ Sprint 3 terminé |
 | **DEV-3** | Module Utilisateurs & Auth | UserService, AuthService, JWT, BCrypt, API REST Auth | ✅ Sprint 2 terminé |
-| **DEV-4** | Module Agences | AgencyService, AgencyDAO, AgencyResource, Caisse | 🔲 À faire |
+| **DEV-4** | Module Agences | AgencyService, AgencyDAO, AgencyResource, Caisse | ✅ Sprint 4 terminé |
 | **DEV-5** | Documents & UI | DocumentService, PDF (iText), Pages JSF, KYC | 🔲 À faire |
 | **DEV-6** | Notifications & Tests | NotificationService, AuditLog, JUnit 5, OpenAPI | 🔲 À faire |
 

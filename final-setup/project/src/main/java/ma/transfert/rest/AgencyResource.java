@@ -22,10 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * DEV-4 — Endpoints REST pour la gestion des agences.
- * Toutes ces routes nécessitent une authentification JWT valide.
- */
 @Path("/agencies")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

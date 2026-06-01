@@ -18,11 +18,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * DEV-4 — Service de gestion des agences.
- * Responsabilités : CRUD agences, rechargement/retrait de caisse, affectation des agents,
- * tableau de bord par agence, liste des agents.
- */
 @Stateless
 public class AgencyService {
 

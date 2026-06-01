@@ -76,8 +76,6 @@ public class TransferDAO extends BaseDAO<Transfer, Long> {
         .getResultList();
     }
 
-    // ─── DEV-4 : Statistiques par agence (Dashboard) ────────────────────────
-
     /**
      * Compte les transferts d'une agence, filtrés par statut (envoi ou réception).
      */

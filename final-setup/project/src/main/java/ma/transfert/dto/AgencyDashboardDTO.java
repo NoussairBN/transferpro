@@ -3,10 +3,6 @@ package ma.transfert.dto;
 import ma.transfert.model.Agency.AgencyStatus;
 import java.math.BigDecimal;
 
-/**
- * DEV-4 — DTO pour le tableau de bord d'une agence.
- * Regroupe les KPIs essentiels : transferts, volumes, agents, caisse.
- */
 public class AgencyDashboardDTO {
 
     // ── Informations de l'agence ──
