@@ -1,0 +1,70 @@
+services:
+
+  # PostgreSQL - base de donnees
+  postgres:
+    image: postgres:15-alpine
+    container_name: mt_postgres
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB}
+      POSTGRES_USER:     ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mt_network
+
+  # WildFly - serveur d'application
+  wildfly:
+    build:
+      context: .
+      dockerfile: ./docker/wildfly/Dockerfile
+      args:
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        WILDFLY_ADMIN_USER: ${WILDFLY_ADMIN_USER}
+        WILDFLY_ADMIN_PASSWORD: ${WILDFLY_ADMIN_PASSWORD}
+    container_name: mt_wildfly
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "8080:8080"
+      - "9990:9990"
+    volumes:
+      - ./uploads:/opt/jboss/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - mt_network
+
+  # PgAdmin - interface graphique base de donnees (optionnel)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: mt_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL:    ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - mt_network
+
+volumes:
+  postgres_data:
+
+networks:
+  mt_network:
+    driver: bridge
