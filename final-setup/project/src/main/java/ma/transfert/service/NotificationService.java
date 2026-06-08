@@ -78,4 +78,20 @@ public class NotificationService {
         logger.info(String.format("[NOTIFICATION] Type: %s, Phone: %s, Email: %s, Transfer: %s, Time: %s",
             type, phone, email, trackingCode, LocalDateTime.now()));
     }
+
+    @Asynchronous
+    public void sendCancellationNotification(String phone, String email, String trackingCode) {
+        String message = String.format("Votre transfert %s a été annulé.", trackingCode);
+
+        if (phone != null && !phone.isEmpty()) {
+            logger.info(String.format("📱 [SMS SIMULÉ] → %s : %s", phone, message));
+        }
+
+        if (email != null && !email.isEmpty()) {
+            logger.info(String.format("📧 [EMAIL SIMULÉ] → %s : %s", email, message));
+        }
+
+        logger.info(String.format("[NOTIF] type=TRANSFER_CANCELLED phone=%s email=%s transfer=%s",
+                phone, email, trackingCode));
+    }
 }
