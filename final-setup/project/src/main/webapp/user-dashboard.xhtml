@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>TransferPro — Mon Espace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:#0d1117;font-family:'Segoe UI',sans-serif;color:#c9d1d9;min-height:100vh}
+
+        /* ── Navbar ── */
+        .nav{background:#161b22;border-bottom:1px solid #30363d;padding:0 28px;height:58px;
+             display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-brand{color:#58a6ff;font-size:18px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:8px}
+        .nav-right{display:flex;align-items:center;gap:14px;font-size:14px;color:#8b949e}
+        .nav-right span{color:#e6edf3;font-weight:500}
+        .nav-badge{padding:2px 9px;border-radius:4px;font-size:11px;font-weight:600}
+        .badge-role-individual{background:#1f6feb33;color:#58a6ff;border:1px solid #1f6feb}
+        .btn-sm{background:transparent;border:1px solid #30363d;color:#8b949e;padding:5px 12px;
+                border-radius:6px;cursor:pointer;font-size:13px}
+        .btn-sm:hover{border-color:#58a6ff;color:#58a6ff}
+
+        /* ── Layout ── */
+        .layout{display:flex;min-height:calc(100vh - 58px)}
+        .sidebar{width:230px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;flex-shrink:0}
+        .sb-section{padding:0 16px;margin:16px 0 6px;font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.8px}
+        .sb-link{display:flex;align-items:center;gap:10px;padding:9px 20px;color:#8b949e;
+                 text-decoration:none;font-size:14px;border-left:3px solid transparent;transition:.15s}
+        .sb-link:hover,.sb-link.active{background:#21262d;color:#e6edf3;border-left-color:#58a6ff}
+        .sb-link .icon{font-size:16px}
+        .main{flex:1;padding:28px 32px;overflow:auto}
+
+        /* ── KYC Banner ── */
+        .kyc-banner{border-radius:8px;padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:12px;font-size:14px}
+        .kyc-verified{background:#1f6feb1a;border:1px solid #238636;color:#3fb950}
+        .kyc-pending {background:#b08800 1a;border:1px solid #9e6a03;color:#d29922;background:rgba(176,136,0,.1)}
+        .kyc-rejected{background:rgba(248,81,73,.1);border:1px solid #f85149;color:#f85149}
+        .kyc-icon{font-size:20px}
+        .kyc-text strong{display:block;font-size:15px;font-weight:600}
+        .kyc-text span{opacity:.8}
+        .kyc-action{margin-left:auto}
+        .kyc-action a{color:inherit;font-weight:600;text-decoration:underline;font-size:13px}
+
+        /* ── Stats ── */
+        .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+        .stat{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:18px 20px}
+        .stat-label{font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+        .stat-val{font-size:28px;font-weight:700}
+        .c-blue{color:#58a6ff} .c-green{color:#3fb950} .c-amber{color:#d29922} .c-purple{color:#bc8cff}
+
+        /* ── Section headers ── */
+        .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+        .section-title{font-size:16px;font-weight:600;color:#e6edf3}
+        .section-sub{font-size:13px;color:#6e7681;margin-top:2px}
+
+        /* ── Transfer Form ── */
+        .form-card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:24px;margin-bottom:24px}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+        .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px}
+        .field{display:flex;flex-direction:column;gap:6px}
+        .field label{font-size:12px;color:#8b949e;text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+        .field input,.field select,.field textarea{
+            background:#0d1117;border:1px solid #30363d;color:#e6edf3;
+            padding:10px 12px;border-radius:6px;font-size:14px;font-family:inherit;outline:none;width:100%}
+        .field input:focus,.field select:focus{border-color:#58a6ff}
+        .field .hint{font-size:11px;color:#6e7681}
+        .divider{grid-column:1/-1;border:none;border-top:1px solid #21262d;margin:8px 0}
+        .btn-primary{background:#238636;color:white;border:none;padding:11px 24px;border-radius:6px;
+                     cursor:pointer;font-size:14px;font-weight:600;width:100%;margin-top:16px;transition:.2s}
+        .btn-primary:hover{background:#2ea043}
+        .fee-preview{background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:12px 16px;
+                     margin-top:12px;font-size:13px;color:#8b949e;display:flex;gap:24px}
+        .fee-preview span{color:#e6edf3;font-weight:600}
+
+        /* ── Messages ── */
+        .msg-box{border-radius:6px;padding:10px 14px;font-size:13px;margin-bottom:16px}
+        .msg-success{background:rgba(63,185,80,.1);border:1px solid #238636;color:#3fb950}
+        .msg-error  {background:rgba(248,81,73,.1);border:1px solid #f85149;color:#f85149}
+        .msg-warn   {background:rgba(210,153,34,.1);border:1px solid #9e6a03;color:#d29922}
+
+        /* ── Table ── */
+        .table-card{background:#161b22;border:1px solid #30363d;border-radius:10px;overflow:hidden;margin-bottom:24px}
+        table{width:100%;border-collapse:collapse}
+        th{background:#0d1117;color:#58a6ff;padding:11px 16px;text-align:left;font-size:11px;
+           text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #30363d}
+        td{padding:12px 16px;border-bottom:1px solid #21262d;font-size:13px;color:#c9d1d9;vertical-align:middle}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:#1c2128}
+        .badge{display:inline-block;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}
+        .badge-paid     {background:rgba(63,185,80,.15);color:#3fb950;border:1px solid #238636}
+        .badge-available{background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid #1f6feb}
+        .badge-pending  {background:rgba(210,153,34,.15);color:#d29922;border:1px solid #9e6a03}
+        .badge-cancelled{background:rgba(248,81,73,.15);color:#f85149;border:1px solid #f85149}
+        .amount-col{font-weight:600;color:#58a6ff}
+        .code-col{font-family:monospace;font-size:12px;color:#8b949e}
+        .empty-state{padding:48px;text-align:center;color:#6e7681}
+        .empty-state .icon{font-size:32px;margin-bottom:12px}
+        .empty-state p{font-size:14px}
+
+        /* ── Doc table ── */
+        .doc-status-pending  {color:#d29922} .doc-status-validated{color:#3fb950} .doc-status-rejected{color:#f85149}
+
+        /* ── Success transfer modal ── */
+        .otp-box{background:#0d1117;border:2px solid #238636;border-radius:8px;padding:16px;
+                 text-align:center;margin-top:12px}
+        .otp-code{font-size:28px;font-weight:700;color:#3fb950;letter-spacing:4px;font-family:monospace}
+        .tracking-display{font-family:monospace;color:#58a6ff;font-weight:600;font-size:15px}
+    </style>
+</h:head>
+<h:body>
+
+    <!-- Navbar -->
+    <nav class="nav">
+        <a class="nav-brand" href="user-dashboard.xhtml">⚡ TransferPro</a>
+        <div class="nav-right">
+            <span>#{sessionScope.userFullName}</span>
+            <span class="nav-badge badge-role-individual">#{sessionScope.userRole}</span>
+            <h:form style="margin:0">
+                <h:commandButton value="Déconnexion" action="#{loginBean.logout}" styleClass="btn-sm"/>
+            </h:form>
+        </div>
+    </nav>
+
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sb-section">Mon espace</div>
+            <a href="user-dashboard.xhtml" class="sb-link active"><span class="icon">🏠</span> Tableau de bord</a>
+            <a href="#send"       class="sb-link"><span class="icon">💸</span> Envoyer de l'argent</a>
+            <a href="#history"    class="sb-link"><span class="icon">📋</span> Mes transferts</a>
+            <div class="sb-section">Identité</div>
+            <a href="kyc-upload.xhtml" class="sb-link"><span class="icon">📄</span> Documents KYC</a>
+            <a href="documents.xhtml"  class="sb-link"><span class="icon">📁</span> Mes documents</a>
+            <div class="sb-section">Compte</div>
+            <h:panelGroup rendered="#{sessionScope.userRole == 'ADMIN'}" layout="block">
+                <a href="admin-dashboard.xhtml" class="sb-link" style="color:#d29922"><span class="icon">⚙️</span> Administration</a>
+            </h:panelGroup>
+            <h:form style="margin:0">
+                <h:commandLink action="#{loginBean.logout}"
+                    styleClass="sb-link" style="border:none;background:transparent;cursor:pointer;width:100%;text-align:left">
+                    <span class="icon">🚪</span> Déconnexion
+                </h:commandLink>
+            </h:form>
+        </aside>
+
+        <!-- Main -->
+        <main class="main">
+
+            <!-- KYC Banner -->
+            <div class="kyc-banner #{userDashboardBean.kycStatusClass}">
+                <span class="kyc-icon">#{userDashboardBean.kycStatusClass == 'kyc-verified' ? '✅' : (userDashboardBean.kycStatusClass == 'kyc-rejected' ? '❌' : '⏳')}</span>
+                <div class="kyc-text">
+                    <strong>#{userDashboardBean.kycLabel}</strong>
+                    <span>#{userDashboardBean.kycStatusClass == 'kyc-verified' ? 'Vous pouvez utiliser toutes les fonctionnalités.' : (userDashboardBean.kycStatusClass == 'kyc-rejected' ? 'Veuillez re-soumettre vos documents.' : 'Soumettez vos documents pour valider votre identité.')}</span>
+                </div>
+                <div class="kyc-action">
+                    <a href="kyc-upload.xhtml">
+                        #{userDashboardBean.kycStatusClass == 'kyc-verified' ? 'Voir mes documents' : 'Soumettre mes documents →'}
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">Transferts effectués</div>
+                    <div class="stat-val c-blue">#{userDashboardBean.totalTransfers}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Volume total envoyé</div>
+                    <div class="stat-val c-green">#{userDashboardBean.totalSent} MAD</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Documents validés</div>
+                    <div class="stat-val c-amber">#{userDashboardBean.validatedDocs}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Documents en attente</div>
+                    <div class="stat-val c-purple">#{userDashboardBean.pendingDocs}</div>
+                </div>
+            </div>
+
+            <!-- Send Money Form -->
+            <a name="send"/>
+            <div class="form-card">
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">💸 Envoyer de l'argent</div>
+                        <div class="section-sub">Remplissez le formulaire pour initier un transfert</div>
+                    </div>
+                </div>
+
+                <h:form id="transferForm">
+                    <h:messages globalOnly="true" layout="list"
+                        infoClass="msg-box msg-success" errorClass="msg-box msg-error" warnClass="msg-box msg-warn"/>
+
+                    <!-- Success: show tracking + OTP -->
+                    <h:panelGroup rendered="#{not empty userDashboardBean.lastCreatedTransfer}" layout="block">
+                        <div class="msg-box msg-success">
+                            ✅ Transfert créé avec succès !
+                            <div style="margin-top:8px">
+                                Code de suivi : <span class="tracking-display">#{userDashboardBean.lastCreatedTransfer.trackingCode}</span>
+                            </div>
+                            <div style="font-size:12px;margin-top:4px;color:#8b949e">
+                                L'OTP sera communiqué au bénéficiaire lors du retrait en agence.
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Votre nom (expéditeur)</label>
+                            <h:inputText value="#{userDashboardBean.senderName}" placeholder="Nom complet"/>
+                        </div>
+                        <div class="field">
+                            <label>Votre téléphone</label>
+                            <h:inputText value="#{userDashboardBean.senderPhone}" placeholder="06XXXXXXXX"/>
+                        </div>
+                        <hr class="divider"/>
+                        <div class="field">
+                            <label>Nom du bénéficiaire *</label>
+                            <h:inputText value="#{userDashboardBean.receiverName}" placeholder="Nom complet" required="true"/>
+                        </div>
+                        <div class="field">
+                            <label>Téléphone bénéficiaire *</label>
+                            <h:inputText value="#{userDashboardBean.receiverPhone}" placeholder="06XXXXXXXX" required="true"/>
+                        </div>
+                        <div class="field">
+                            <label>Email bénéficiaire (optionnel)</label>
+                            <h:inputText value="#{userDashboardBean.receiverEmail}" placeholder="email@exemple.ma"/>
+                        </div>
+                        <div class="field">
+                            <label>Agence de dépôt</label>
+                            <h:selectOneMenu value="#{userDashboardBean.selectedAgencyId}" styleClass="">
+                                <f:selectItems value="#{userDashboardBean.activeAgencies}" var="ag"
+                                    itemValue="#{ag.id}" itemLabel="#{ag.name} — #{ag.city}"/>
+                            </h:selectOneMenu>
+                        </div>
+                    </div>
+                    <div class="form-grid-3">
+                        <div class="field">
+                            <label>Montant à envoyer (MAD) *</label>
+                            <h:inputText value="#{userDashboardBean.amount}" placeholder="Ex: 500" required="true"/>
+                            <span class="hint">Min: 50 MAD — Max: 50 000 MAD</span>
+                        </div>
+                        <div class="field" style="grid-column:span 2">
+                            <label>Notes (optionnel)</label>
+                            <h:inputText value="#{userDashboardBean.notes}" placeholder="Message pour le bénéficiaire"/>
+                        </div>
+                    </div>
+                    <div class="fee-preview">
+                        💡 Les frais sont calculés automatiquement lors de la création du transfert.
+                        <span>Frais estimés : ~5%</span>
+                    </div>
+                    <h:commandButton value="Envoyer le transfert →" action="#{userDashboardBean.createTransfer}"
+                        styleClass="btn-primary"/>
+                </h:form>
+            </div>
+
+            <!-- Transfer History -->
+            <a name="history"/>
+            <div class="section-header">
+                <div>
+                    <div class="section-title">📋 Mes transferts</div>
+                    <div class="section-sub">Historique de tous vos envois</div>
+                </div>
+                <a href="receipts.xhtml" style="color:#58a6ff;font-size:13px;text-decoration:none">
+                    Voir tous les reçus →
+                </a>
+            </div>
+
+            <div class="table-card">
+                <h:panelGroup rendered="#{empty userDashboardBean.myTransfers}" layout="block">
+                    <div class="empty-state">
+                        <div class="icon">💸</div>
+                        <p>Aucun transfert effectué pour l'instant.<br/>Utilisez le formulaire ci-dessus pour envoyer de l'argent.</p>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{not empty userDashboardBean.myTransfers}" layout="block">
+                    <table>
+                        <tr>
+                            <th>Référence</th>
+                            <th>Bénéficiaire</th>
+                            <th>Montant</th>
+                            <th>Frais</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                        </tr>
+                        <ui:repeat value="#{userDashboardBean.myTransfers}" var="tx">
+                            <tr>
+                                <td class="code-col">#{tx.trackingCode}</td>
+                                <td>#{tx.receiverName}<br/><span style="font-size:11px;color:#6e7681">#{tx.receiverPhone}</span></td>
+                                <td class="amount-col">#{tx.amount} MAD</td>
+                                <td style="color:#6e7681">#{tx.fees} MAD</td>
+                                <td style="color:#6e7681;font-size:12px">#{userDashboardBean.formatDate(tx.createdAt)}</td>
+                                <td><span class="badge #{userDashboardBean.getStatusBadgeClass(tx)}">#{userDashboardBean.getStatusLabel(tx)}</span></td>
+                            </tr>
+                        </ui:repeat>
+                    </table>
+                </h:panelGroup>
+            </div>
+
+            <!-- My Documents -->
+            <div class="section-header">
+                <div>
+                    <div class="section-title">📄 Mes documents KYC</div>
+                    <div class="section-sub">État de validation de vos pièces justificatives</div>
+                </div>
+                <a href="kyc-upload.xhtml" style="color:#58a6ff;font-size:13px;text-decoration:none">
+                    Soumettre un document →
+                </a>
+            </div>
+
+            <div class="table-card">
+                <h:panelGroup rendered="#{empty userDashboardBean.myDocuments}" layout="block">
+                    <div class="empty-state">
+                        <div class="icon">📄</div>
+                        <p>Aucun document soumis.<br/><a href="kyc-upload.xhtml" style="color:#58a6ff">Soumettre mes documents KYC →</a></p>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{not empty userDashboardBean.myDocuments}" layout="block">
+                    <table>
+                        <tr>
+                            <th>Type</th>
+                            <th>Fichier</th>
+                            <th>Soumis le</th>
+                            <th>Statut</th>
+                            <th>Commentaire admin</th>
+                        </tr>
+                        <ui:repeat value="#{userDashboardBean.myDocuments}" var="doc">
+                            <tr>
+                                <td style="font-weight:500">#{doc.type}</td>
+                                <td style="font-family:monospace;font-size:12px">#{doc.originalName}</td>
+                                <td style="color:#6e7681;font-size:12px">#{userDashboardBean.formatDate(doc.uploadedAt)}</td>
+                                <td>
+                                    <span class="doc-status-#{doc.status.name().toLowerCase()}">
+                                        #{doc.status.name() == 'PENDING' ? '⏳ En attente' : (doc.status.name() == 'VALIDATED' ? '✅ Validé' : '❌ Rejeté')}
+                                    </span>
+                                </td>
+                                <td style="color:#8b949e;font-size:12px">#{not empty doc.adminComment ? doc.adminComment : '-'}</td>
+                            </tr>
+                        </ui:repeat>
+                    </table>
+                </h:panelGroup>
+            </div>
+
+        </main>
+    </div>
+</h:body>
+</html>

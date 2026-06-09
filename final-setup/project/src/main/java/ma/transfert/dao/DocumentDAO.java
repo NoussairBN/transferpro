@@ -53,10 +53,10 @@ public class DocumentDAO {
                 .getResultList();
     }
 
-    // ✅ NOUVEAU : tous les docs en attente (vue admin KYC)
+    // ✅ NOUVEAU : tous les docs en attente (vue admin KYC) — JOIN FETCH owner to avoid LazyInitializationException
     public List<Document> findByStatus(DocumentStatus status) {
         return em.createQuery(
-                "SELECT d FROM Document d WHERE d.status = :status ORDER BY d.uploadedAt ASC",
+                "SELECT d FROM Document d LEFT JOIN FETCH d.owner WHERE d.status = :status ORDER BY d.uploadedAt ASC",
                 Document.class)
                 .setParameter("status", status)
                 .getResultList();

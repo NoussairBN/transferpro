@@ -3,317 +3,242 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
-
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 <h:head>
-    <title>TransferPro - Reçus &amp; Transactions</title>
-    <h:outputStylesheet library="css" name="style.css"/>
+    <title>TransferPro — Historique des Transferts</title>
     <style>
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .receipts-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background-color: #1e293b;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .page-header {
-            border-bottom: 1px solid #334155;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-        .page-title {
-            color: #38bdf8;
-            margin: 0 0 8px 0;
-            font-size: 1.8rem;
-        }
-        .page-subtitle {
-            color: #94a3b8;
-            margin: 0;
-            font-size: 0.95rem;
-        }
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .badge-success { 
-            background-color: rgba(16, 185, 129, 0.15); 
-            color: #10b981; 
-            border: 1px solid #10b981; 
-        }
-        .badge-warning { 
-            background-color: rgba(245, 158, 11, 0.15); 
-            color: #f59e0b; 
-            border: 1px solid #f59e0b; 
-        }
-        .badge-info { 
-            background-color: rgba(56, 189, 248, 0.15); 
-            color: #38bdf8; 
-            border: 1px solid #38bdf8; 
-        }
-        .badge-danger { 
-            background-color: rgba(239, 68, 68, 0.15); 
-            color: #ef4444; 
-            border: 1px solid #ef4444; 
-        }
-        
-        /* PrimeFaces Dark Customization */
-        .ui-datatable.custom-dark-table {
-            background-color: #1e293b !important;
-        }
-        .ui-datatable.custom-dark-table th {
-            background-color: #0f172a !important;
-            color: #38bdf8 !important;
-            border-color: #334155 !important;
-            padding: 15px !important;
-            font-weight: 600 !important;
-        }
-        .ui-datatable.custom-dark-table tr {
-            background-color: #1e293b !important;
-            color: #f8fafc !important;
-        }
-        .ui-datatable.custom-dark-table tr.ui-widget-content {
-            background-color: #1e293b !important;
-        }
-        .ui-datatable.custom-dark-table td {
-            border-color: #334155 !important;
-            padding: 12px 15px !important;
-        }
-        .ui-datatable.custom-dark-table .ui-datatable-even {
-            background-color: #1a2538 !important;
-        }
-        .btn-action {
-            margin-right: 8px !important;
-        }
-        .ui-dialog .ui-dialog-content {
-            background-color: #1e293b !important;
-            color: #f8fafc !important;
-        }
-        .ui-dialog .ui-dialog-titlebar {
-            background-color: #0f172a !important;
-            color: #38bdf8 !important;
-            border-bottom: 1px solid #334155 !important;
-        }
-        .ui-dialog .ui-dialog-titlebar-close {
-            background-color: transparent !important;
-            color: #94a3b8 !important;
-        }
-        .ui-button-outlined {
-            background: transparent !important;
-        }
-        .ui-button-info {
-            color: #38bdf8 !important;
-            border-color: #38bdf8 !important;
-        }
-        .ui-button-success {
-            background-color: #10b981 !important;
-            border-color: #10b981 !important;
-            color: white !important;
-        }
-        .empty-message {
-            text-align: center;
-            padding: 40px;
-            color: #94a3b8;
-            font-size: 1.1rem;
-        }
-        .amount-highlight {
-            font-weight: 600;
-            color: #38bdf8;
-        }
-        .tracking-code {
-            font-family: monospace;
-            font-weight: bold;
-            color: #cbd5e1;
-            letter-spacing: 0.5px;
-        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:#0d1117;font-family:'Segoe UI',sans-serif;color:#c9d1d9;min-height:100vh}
+        .nav{background:#161b22;border-bottom:1px solid #30363d;padding:0 28px;height:58px;
+             display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-brand{color:#58a6ff;font-size:18px;font-weight:700;text-decoration:none}
+        .nav-right{display:flex;align-items:center;gap:14px;font-size:14px;color:#8b949e}
+        .nav-right span{color:#e6edf3;font-weight:500}
+        .btn-sm{background:transparent;border:1px solid #30363d;color:#8b949e;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:13px}
+        .layout{display:flex;min-height:calc(100vh - 58px)}
+        .sidebar{width:220px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;flex-shrink:0}
+        .sb-section{padding:0 16px;margin:16px 0 6px;font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.8px}
+        .sb-link{display:flex;align-items:center;gap:10px;padding:9px 20px;color:#8b949e;text-decoration:none;font-size:14px;border-left:3px solid transparent;transition:.15s}
+        .sb-link:hover,.sb-link.active{background:#21262d;color:#e6edf3;border-left-color:#58a6ff}
+        .main{flex:1;padding:28px 32px;overflow:auto}
+        .page-title{font-size:22px;font-weight:700;color:#e6edf3;margin-bottom:4px}
+        .page-sub{font-size:13px;color:#6e7681;margin-bottom:24px}
+        .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+        .stat{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px 20px}
+        .stat-label{font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+        .stat-val{font-size:24px;font-weight:700}
+        .c-blue{color:#58a6ff}.c-green{color:#3fb950}.c-amber{color:#d29922}
+        .card{background:#161b22;border:1px solid #30363d;border-radius:10px;overflow:hidden}
+        .card-header{padding:14px 20px;border-bottom:1px solid #21262d;display:flex;align-items:center;justify-content:space-between}
+        .card-title{font-size:15px;font-weight:600;color:#e6edf3}
+        table{width:100%;border-collapse:collapse}
+        th{background:#0d1117;color:#58a6ff;padding:11px 16px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #30363d}
+        td{padding:13px 16px;border-bottom:1px solid #21262d;font-size:13px;color:#c9d1d9;vertical-align:middle}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:#1c2128}
+        .badge{display:inline-block;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}
+        .badge-paid{background:rgba(63,185,80,.15);color:#3fb950;border:1px solid #238636}
+        .badge-available{background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid #1f6feb}
+        .badge-pending{background:rgba(210,153,34,.15);color:#d29922;border:1px solid #9e6a03}
+        .badge-cancelled{background:rgba(248,81,73,.15);color:#f85149;border:1px solid #f85149}
+        .amount-col{font-weight:600;color:#58a6ff}
+        .code-col{font-family:monospace;font-size:12px;color:#8b949e;letter-spacing:.3px}
+        .sub-text{font-size:11px;color:#6e7681;margin-top:2px}
+        .btn-pdf{background:#238636;color:white;border:none;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500}
+        .btn-view{background:transparent;color:#58a6ff;border:1px solid #1f6feb;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px}
+        .empty-state{padding:56px;text-align:center;color:#6e7681}
+        .empty-icon{font-size:40px;margin-bottom:12px}
+        .empty-text{font-size:14px}
+        /* Dialog */
+        .ui-dialog .ui-dialog-content{background:#161b22 !important;color:#c9d1d9 !important}
+        .ui-dialog .ui-dialog-titlebar{background:#0d1117 !important;color:#58a6ff !important;border-bottom:1px solid #30363d !important}
+        .ui-dialog .ui-dialog-titlebar-close{color:#6e7681 !important}
+        .detail-section{padding:4px 0}
+        .detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #21262d;font-size:13px}
+        .detail-row:last-child{border-bottom:none}
+        .detail-label{color:#6e7681}
+        .detail-value{color:#e6edf3;font-weight:500;text-align:right}
+        .detail-amount{color:#58a6ff;font-size:18px;font-weight:700}
+        .detail-total{color:#f59e0b;font-size:18px;font-weight:700}
+        .detail-header{text-align:center;padding:12px 0 16px;border-bottom:1px solid #30363d;margin-bottom:12px}
+        .tracking-mono{font-family:monospace;color:#58a6ff;font-size:13px;margin-top:4px}
     </style>
 </h:head>
-
 <h:body>
-    <div class="receipts-container">
-        
-        <div class="page-header">
-            <h1 class="page-title">Historique des Transactions &amp; Reçus</h1>
-            <p class="page-subtitle">Visualisez vos flux financiers et téléchargez vos reçus d'opérations officiels au format PDF.</p>
+    <nav class="nav">
+        <a class="nav-brand" href="#{sessionScope.userRole == 'ADMIN' ? 'admin-dashboard.xhtml' : 'user-dashboard.xhtml'}"
+           style="#{sessionScope.userRole == 'ADMIN' ? 'color:#f85149' : 'color:#58a6ff'}">
+            #{sessionScope.userRole == 'ADMIN' ? '⚙️ TransferPro Admin' : '⚡ TransferPro'}
+        </a>
+        <div class="nav-right">
+            <span>#{sessionScope.userFullName}</span>
+            <h:form style="margin:0"><h:commandButton value="Déconnexion" action="#{loginBean.logout}" styleClass="btn-sm"/></h:form>
         </div>
+    </nav>
 
-        <h:form id="receiptsForm">
-            <p:dataTable 
-                value="#{receiptBean.userTransfers}" 
-                var="tx" 
-                styleClass="custom-dark-table"
-                emptyMessage="Aucune transaction trouvée"
-                rows="10"
-                paginator="true"
-                paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                rowsPerPageTemplate="5,10,20">
-                
-                <p:column headerText="Référence" style="width: 15%;">
-                    <h:outputText value="#{tx.trackingCode}" styleClass="tracking-code" />
-                </p:column>
-                
-                <p:column headerText="Expéditeur" style="width: 15%;">
-                    <h:outputText value="#{tx.senderName}" style="color: #f8fafc;" />
-                </p:column>
-                
-                <p:column headerText="Bénéficiaire" style="width: 15%;">
-                    <h:outputText value="#{tx.receiverName}" style="color: #f8fafc;" />
-                </p:column>
-                
-                <p:column headerText="Montant" style="width: 10%;">
-                    <h:outputText value="#{tx.amount} MAD" styleClass="amount-highlight" />
-                </p:column>
-                
-                <p:column headerText="Frais" style="width: 8%;">
-                    <h:outputText value="#{tx.fees} MAD" style="color: #94a3b8;" />
-                </p:column>
-                
-                <p:column headerText="Total" style="width: 10%;">
-                    <h:outputText value="#{tx.totalAmount} MAD" styleClass="amount-highlight" />
-                </p:column>
-                
-                <p:column headerText="Date Création" style="width: 12%;">
-                    <h:outputText value="#{tx.createdAt}" style="color: #94a3b8;">
-                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
-                    </h:outputText>
-                </p:column>
-                
-                <p:column headerText="Statut" style="width: 10%; text-align: center;">
-                    <span class="status-badge #{tx.status == 'PAID' ? 'badge-success' : (tx.status == 'AVAILABLE' ? 'badge-info' : (tx.status == 'EXPIRED' ? 'badge-danger' : 'badge-warning'))}">
-                        #{tx.status}
-                    </span>
-                </p:column>
-                
-                <p:column headerText="Actions" style="width: 15%; text-align: center;">
-                    <p:commandButton 
-                        icon="pi pi-eye" 
-                        update=":txDetailDialog" 
-                        oncomplete="PF('txDialog').show()" 
-                        styleClass="ui-button-outlined ui-button-info btn-action"
-                        title="Voir les détails">
-                        <f:setPropertyActionListener value="#{tx}" target="#{receiptBean.selectedTransfer}" />
-                    </p:commandButton>
-                    
-                    <p:commandButton 
-                        icon="pi pi-file-pdf" 
-                        actionListener="#{receiptBean.downloadReceipt(tx)}" 
-                        ajax="false"
-                        styleClass="ui-button-header ui-button-success"
-                        title="Télécharger le reçu PDF" />
-                </p:column>
-                
-            </p:dataTable>
-        </h:form>
+    <div class="layout">
+        <aside class="sidebar">
+            <!-- ADMIN sidebar -->
+            <h:panelGroup rendered="#{sessionScope.userRole == 'ADMIN'}" layout="block">
+                <div class="sb-section">Admin</div>
+                <a href="admin-dashboard.xhtml" class="sb-link">🛡️ Tableau de bord</a>
+                <a href="receipts.xhtml"        class="sb-link active" style="border-left-color:#f85149;color:#e6edf3">💸 Tous les transferts</a>
+                <div class="sb-section">Compte</div>
+                <h:form style="margin:0">
+                    <h:commandLink action="#{loginBean.logout}" styleClass="sb-link" style="border:none;background:transparent;cursor:pointer;width:100%;text-align:left">
+                        🚪 Déconnexion
+                    </h:commandLink>
+                </h:form>
+            </h:panelGroup>
+            <!-- USER sidebar -->
+            <h:panelGroup rendered="#{sessionScope.userRole != 'ADMIN'}" layout="block">
+                <div class="sb-section">Mon espace</div>
+                <a href="user-dashboard.xhtml" class="sb-link">🏠 Tableau de bord</a>
+                <a href="receipts.xhtml"       class="sb-link active">💸 Mes transferts</a>
+                <div class="sb-section">Identité</div>
+                <a href="kyc-upload.xhtml"     class="sb-link">📄 Documents KYC</a>
+                <a href="documents.xhtml"      class="sb-link">📁 Mes documents</a>
+                <div class="sb-section">Compte</div>
+                <h:form style="margin:0">
+                    <h:commandLink action="#{loginBean.logout}" styleClass="sb-link" style="border:none;background:transparent;cursor:pointer;width:100%;text-align:left">
+                        🚪 Déconnexion
+                    </h:commandLink>
+                </h:form>
+            </h:panelGroup>
+        </aside>
+
+        <main class="main">
+            <div class="page-title">Historique des Transferts</div>
+            <div class="page-sub">Consultez tous vos envois et téléchargez vos reçus officiels PDF</div>
+
+            <!-- Quick stats -->
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">Total transferts</div>
+                    <div class="stat-val c-blue">#{receiptBean.userTransfers != null ? receiptBean.userTransfers.size() : 0}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Transferts payés</div>
+                    <div class="stat-val c-green">#{receiptBean.paidCount}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">En cours</div>
+                    <div class="stat-val c-amber">#{receiptBean.pendingCount}</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Tous les transferts</span>
+                </div>
+
+                <h:form id="receiptsForm">
+                    <h:panelGroup rendered="#{empty receiptBean.userTransfers}" layout="block">
+                        <div class="empty-state">
+                            <div class="empty-icon">💸</div>
+                            <div class="empty-text">Aucun transfert trouvé.<br/>
+                                <a href="user-dashboard.xhtml" style="color:#58a6ff">Effectuer un transfert →</a>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{not empty receiptBean.userTransfers}" layout="block">
+                        <table>
+                            <tr>
+                                <th>Référence</th>
+                                <th>Bénéficiaire</th>
+                                <th>Agence</th>
+                                <th>Montant</th>
+                                <th>Frais</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                            <ui:repeat value="#{receiptBean.userTransfers}" var="tx">
+                                <tr>
+                                    <td class="code-col">#{tx.trackingCode}</td>
+                                    <td>
+                                        <div>#{tx.receiverName}</div>
+                                        <div class="sub-text">#{tx.receiverPhone}</div>
+                                    </td>
+                                    <td style="color:#8b949e;font-size:12px">#{not empty tx.sendingAgencyName ? tx.sendingAgencyName : '—'}</td>
+                                    <td class="amount-col">#{tx.amount} MAD</td>
+                                    <td style="color:#6e7681">#{tx.fees} MAD</td>
+                                    <td class="amount-col">#{tx.totalAmount} MAD</td>
+                                    <td style="color:#6e7681;font-size:12px">#{receiptBean.formatDate(tx.createdAt)}</td>
+                                    <td><span class="badge #{receiptBean.getStatusBadge(tx)}">#{receiptBean.getStatusLabel(tx)}</span></td>
+                                    <td>
+                                        <p:commandButton styleClass="btn-view" title="Détails"
+                                            update=":txDetailDialog" oncomplete="PF('txDialog').show()">
+                                            <f:setPropertyActionListener value="#{tx}" target="#{receiptBean.selectedTransfer}"/>
+                                            <h:outputText value="🔍"/>
+                                        </p:commandButton>
+                                        <p:commandButton styleClass="btn-pdf" title="Télécharger PDF"
+                                            actionListener="#{receiptBean.downloadReceipt(tx)}" ajax="false">
+                                            <h:outputText value="📄 PDF"/>
+                                        </p:commandButton>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </h:panelGroup>
+                </h:form>
+            </div>
+        </main>
     </div>
 
-    <!-- Dialog for transaction details -->
-    <p:dialog 
-        header="Détails de la Transaction" 
-        widgetVar="txDialog" 
-        modal="true" 
-        showEffect="fade" 
-        hideEffect="fade" 
-        resizable="false" 
-        draggable="true"
-        id="txDetailDialog" 
-        width="550px"
-        height="auto">
-        
-        <h:panelGroup rendered="#{not empty receiptBean.selectedTransfer}" style="display: block; padding: 15px;">
-            
-            <!-- Header with status -->
-            <div style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #334155;">
-                <span class="status-badge #{receiptBean.selectedTransfer.status == 'PAID' ? 'badge-success' : (receiptBean.selectedTransfer.status == 'AVAILABLE' ? 'badge-info' : (receiptBean.selectedTransfer.status == 'EXPIRED' ? 'badge-danger' : 'badge-warning'))}" 
-                      style="font-size: 1rem; padding: 8px 20px;">
-                    Statut: #{receiptBean.selectedTransfer.status}
+    <!-- Detail Dialog -->
+    <p:dialog header="Détails du Transfert" widgetVar="txDialog" modal="true"
+              id="txDetailDialog" width="480px" resizable="false">
+        <h:panelGroup rendered="#{not empty receiptBean.selectedTransfer}" style="display:block;padding:16px">
+            <div class="detail-header">
+                <span class="badge #{receiptBean.getStatusBadge(receiptBean.selectedTransfer)}"
+                      style="font-size:13px;padding:5px 16px">
+                    #{receiptBean.getStatusLabel(receiptBean.selectedTransfer)}
                 </span>
+                <div class="tracking-mono" style="margin-top:8px">#{receiptBean.selectedTransfer.trackingCode}</div>
             </div>
-            
-            <!-- Transaction details in 2 columns -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <div>
-                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Référence:</strong></p>
-                    <p style="margin: 8px 0; font-family: monospace; color: #cbd5e1;">#{receiptBean.selectedTransfer.trackingCode}</p>
-                    
-                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Expéditeur:</strong></p>
-                    <p style="margin: 8px 0; color: #f8fafc;">#{receiptBean.selectedTransfer.senderName}</p>
-                    
-                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Téléphone Exp:</strong></p>
-                    <p style="margin: 8px 0; color: #f8fafc;">#{receiptBean.selectedTransfer.senderPhone != null ? receiptBean.selectedTransfer.senderPhone : '-'}</p>
-                    
-                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Montant:</strong></p>
-                    <p style="margin: 8px 0; font-size: 1.2rem; font-weight: bold; color: #38bdf8;">#{receiptBean.selectedTransfer.amount} MAD</p>
+            <div class="detail-section">
+                <div class="detail-row">
+                    <span class="detail-label">Expéditeur</span>
+                    <span class="detail-value">#{receiptBean.selectedTransfer.senderName}</span>
                 </div>
-                
-                <div>
-                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Bénéficiaire:</strong></p>
-                    <p style="margin: 8px 0; color: #f8fafc;">#{receiptBean.selectedTransfer.receiverName}</p>
-                    
-                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Téléphone Bénéf:</strong></p>
-                    <p style="margin: 8px 0; color: #f8fafc;">#{receiptBean.selectedTransfer.receiverPhone}</p>
-                    
-                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Frais:</strong></p>
-                    <p style="margin: 8px 0; color: #f8fafc;">#{receiptBean.selectedTransfer.fees} MAD</p>
-                    
-                    <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Total à payer:</strong></p>
-                    <p style="margin: 8px 0; font-size: 1.2rem; font-weight: bold; color: #f59e0b;">#{receiptBean.selectedTransfer.totalAmount} MAD</p>
+                <div class="detail-row">
+                    <span class="detail-label">Bénéficiaire</span>
+                    <span class="detail-value">#{receiptBean.selectedTransfer.receiverName}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Téléphone bénéficiaire</span>
+                    <span class="detail-value">#{receiptBean.selectedTransfer.receiverPhone}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Agence</span>
+                    <span class="detail-value">#{not empty receiptBean.selectedTransfer.sendingAgencyName ? receiptBean.selectedTransfer.sendingAgencyName : '—'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Montant envoyé</span>
+                    <span class="detail-value detail-amount">#{receiptBean.selectedTransfer.amount} MAD</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Frais de service</span>
+                    <span class="detail-value">#{receiptBean.selectedTransfer.fees} MAD</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Total prélevé</span>
+                    <span class="detail-value detail-total">#{receiptBean.selectedTransfer.totalAmount} MAD</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date de création</span>
+                    <span class="detail-value">#{receiptBean.formatDate(receiptBean.selectedTransfer.createdAt)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date de paiement</span>
+                    <span class="detail-value" style="color:#3fb950">#{receiptBean.formatDate(receiptBean.selectedTransfer.paidAt)}</span>
                 </div>
             </div>
-            
-            <!-- Dates section -->
-            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #334155;">
-                <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Date de création:</strong> 
-                    <h:outputText value="#{receiptBean.selectedTransfer.createdAt}" style="color: #94a3b8;">
-                        <f:convertDateTime pattern="dd/MM/yyyy à HH:mm" />
-                    </h:outputText>
-                </p>
-                
-                <p style="margin: 8px 0;" rendered="#{not empty receiptBean.selectedTransfer.paidAt}">
-                    <strong style="color: #38bdf8;">Date de paiement:</strong> 
-                    <h:outputText value="#{receiptBean.selectedTransfer.paidAt}" style="color: #10b981;">
-                        <f:convertDateTime pattern="dd/MM/yyyy à HH:mm" />
-                    </h:outputText>
-                </p>
-                
-                <p style="margin: 8px 0;" rendered="#{not empty receiptBean.selectedTransfer.expiresAt}">
-                    <strong style="color: #38bdf8;">Date d'expiration:</strong> 
-                    <h:outputText value="#{receiptBean.selectedTransfer.expiresAt}" style="color: #ef4444;">
-                        <f:convertDateTime pattern="dd/MM/yyyy à HH:mm" />
-                    </h:outputText>
-                </p>
-            </div>
-            
-            <!-- Notes if any -->
-            <p style="margin: 15px 0 8px 0;" rendered="#{not empty receiptBean.selectedTransfer.notes}">
-                <strong style="color: #38bdf8;">Notes:</strong><br/>
-                <span style="color: #94a3b8;">#{receiptBean.selectedTransfer.notes}</span>
-            </p>
-            
-            <!-- Agency info if available -->
-            <div rendered="#{not empty receiptBean.selectedTransfer.sendingAgency}" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;">
-                <p style="margin: 8px 0;"><strong style="color: #38bdf8;">Agence émettrice:</strong> 
-                    <span style="color: #f8fafc;">#{receiptBean.selectedTransfer.sendingAgency.name}</span>
-                </p>
-            </div>
-            
         </h:panelGroup>
-        
-        <!-- Empty state if no transfer selected -->
-        <h:panelGroup rendered="#{empty receiptBean.selectedTransfer}" style="display: block; padding: 40px; text-align: center;">
-            <p style="color: #94a3b8;">Sélectionnez une transaction pour voir les détails</p>
-        </h:panelGroup>
-        
     </p:dialog>
-
 </h:body>
 </html>

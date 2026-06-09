@@ -4,188 +4,130 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
-
 <h:head>
-    <title>TransferPro - Espace KYC</title>
-    <h:outputStylesheet library="css" name="style.css"/>
+    <title>TransferPro — Vérification KYC</title>
     <style>
-        /* Styles correctifs intégrés pour garantir la largeur et le thème sombre */
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .kyc-layout {
-            display: flex;
-            gap: 30px;
-            max-width: 1400px;
-            margin: 0 auto;
-            align-items: flex-start;
-        }
-        .kyc-sidebar {
-            flex: 1;
-            min-width: 380px;
-            background-color: #1e293b;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .kyc-main-content {
-            flex: 2;
-            background-color: #1e293b;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .page-title {
-            color: #38bdf8;
-            margin-top: 0;
-            font-size: 1.8rem;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #94a3b8;
-            font-weight: 500;
-        }
-        .form-control-custom {
-            width: 100%;
-            padding: 10px;
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            color: #f8fafc;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        .btn-submit {
-            width: 100%;
-            padding: 12px;
-            background-color: #38bdf8;
-            color: #0f172a;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .btn-submit:hover {
-            background-color: #0ea5e9;
-        }
-        /* Style personnalisé pour les badges de statut */
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-block;
-            text-align: center;
-        }
-        .badge-yellow { background-color: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
-        .badge-green { background-color: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
-        .badge-red { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
-        
-        /* Personnalisation de la DataTable PrimeFaces en mode sombre */
-        .ui-datatable.custom-dark-table .ui-datatable-header,
-        .ui-datatable.custom-dark-table th {
-            background-color: #0f172a !important;
-            color: #38bdf8 !important;
-            border-color: #334155 !important;
-            font-weight: 600;
-        }
-        .ui-datatable.custom-dark-table tr {
-            background-color: #1e293b !important;
-            color: #f8fafc !important;
-        }
-        .ui-datatable.custom-dark-table td {
-            border-color: #334155 !important;
-            padding: 12px 15px !important;
-        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:#0d1117;font-family:'Segoe UI',sans-serif;color:#c9d1d9;min-height:100vh}
+        .nav{background:#161b22;border-bottom:1px solid #30363d;padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-brand{color:#58a6ff;font-size:18px;font-weight:700;text-decoration:none}
+        .nav-right{display:flex;align-items:center;gap:14px;font-size:14px;color:#8b949e}
+        .nav-right span{color:#e6edf3;font-weight:500}
+        .btn-sm{background:transparent;border:1px solid #30363d;color:#8b949e;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:13px}
+        .layout{display:flex;min-height:calc(100vh - 58px)}
+        .sidebar{width:220px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;flex-shrink:0}
+        .sb-section{padding:0 16px;margin:16px 0 6px;font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.8px}
+        .sb-link{display:flex;align-items:center;gap:10px;padding:9px 20px;color:#8b949e;text-decoration:none;font-size:14px;border-left:3px solid transparent;transition:.15s}
+        .sb-link:hover,.sb-link.active{background:#21262d;color:#e6edf3;border-left-color:#58a6ff}
+        .main{flex:1;padding:28px 32px;overflow:auto}
+        .page-title{font-size:22px;font-weight:700;color:#e6edf3;margin-bottom:4px}
+        .page-sub{font-size:13px;color:#6e7681;margin-bottom:24px}
+        .grid{display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start}
+        .card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:24px}
+        .card-title{font-size:15px;font-weight:600;color:#e6edf3;margin-bottom:6px}
+        .card-sub{font-size:13px;color:#6e7681;margin-bottom:20px;line-height:1.5}
+        .field{margin-bottom:16px}
+        .field label{display:block;font-size:12px;color:#8b949e;font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+        .field select,.field input[type=file]{width:100%;padding:10px 12px;background:#0d1117;border:1px solid #30363d;color:#e6edf3;border-radius:6px;font-size:14px;font-family:inherit;outline:none}
+        .field select:focus{border-color:#58a6ff}
+        .btn-upload{width:100%;padding:11px;background:#1f6feb;color:white;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;font-family:inherit}
+        .btn-upload:hover{background:#388bfd}
+        .msg{border-radius:6px;padding:10px 14px;font-size:13px;margin-bottom:12px}
+        .msg-success{background:rgba(63,185,80,.1);border:1px solid #238636;color:#3fb950}
+        .msg-error{background:rgba(248,81,73,.1);border:1px solid #f85149;color:#f85149}
+        table{width:100%;border-collapse:collapse}
+        th{background:#0d1117;color:#58a6ff;padding:10px 16px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #30363d}
+        td{padding:12px 16px;border-bottom:1px solid #21262d;font-size:13px;color:#c9d1d9;vertical-align:middle}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:#1c2128}
+        .badge{display:inline-block;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}
+        .badge-pending{background:rgba(210,153,34,.15);color:#d29922;border:1px solid #9e6a03}
+        .badge-validated{background:rgba(63,185,80,.15);color:#3fb950;border:1px solid #238636}
+        .badge-rejected{background:rgba(248,81,73,.15);color:#f85149;border:1px solid #f85149}
+        .empty{padding:32px;text-align:center;color:#6e7681;font-size:13px}
     </style>
 </h:head>
-
 <h:body>
-    <div class="kyc-layout">
-        
-        <div class="kyc-sidebar">
-            <h1 class="page-title">Vérification KYC</h1>
-            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5; margin-bottom: 25px;">
-                Uploadez votre CNI, passeport ou justificatif de domicile pour faire valider votre compte par notre équipe de conformité.
-            </p>
-
-            <h:form enctype="multipart/form-data">
-                <div class="form-group">
-                    <h:outputLabel for="docType" value="Type de document :"/>
-                    <h:selectOneMenu id="docType" value="#{kycBean.selectedType}" required="true" styleClass="form-control-custom">
-                        <f:selectItem itemValue="" itemLabel="-- Choisir un type --"/>
-                        <f:selectItem itemValue="CNI_RECTO"         itemLabel="CIN Recto"/>
-                        <f:selectItem itemValue="CNI_VERSO"         itemLabel="CIN Verso"/>
-                        <f:selectItem itemValue="PASSPORT"          itemLabel="Passeport"/>
-                        <f:selectItem itemValue="PROOF_OF_ADDRESS"  itemLabel="Justificatif de domicile"/>
-                    </h:selectOneMenu>
-                </div>
-
-                <div class="form-group">
-                    <h:outputLabel for="fileUpload" value="Fichier (PDF, JPEG, PNG) :"/>
-                    <p:fileUpload id="fileUpload"
-                                  value="#{kycBean.uploadedFile}"
-                                  mode="simple"
-                                  accept=".pdf,.jpg,.jpeg,.png"
-                                  required="true"
-                                  styleClass="form-control-custom"
-                                  style="padding: 5px;"/>
-                </div>
-
-                <h:commandButton value="Envoyer le document"
-                                 action="#{kycBean.uploadDocument}"
-                                 styleClass="btn-submit"/>
-
-                <div style="margin-top: 15px;">
-                    <h:messages showSummary="true" showDetail="false"
-                                style="list-style: none; padding: 0; margin: 0;"
-                                errorStyle="color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 6px;"
-                                infoStyle="color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 10px; border-radius: 6px;"/>
-                </div>
+    <nav class="nav">
+        <a class="nav-brand" href="user-dashboard.xhtml">⚡ TransferPro</a>
+        <div class="nav-right">
+            <span>#{sessionScope.userFullName}</span>
+            <h:form style="margin:0"><h:commandButton value="Déconnexion" action="#{loginBean.logout}" styleClass="btn-sm"/></h:form>
+        </div>
+    </nav>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sb-section">Mon espace</div>
+            <a href="user-dashboard.xhtml" class="sb-link">🏠 Tableau de bord</a>
+            <a href="receipts.xhtml"       class="sb-link">💸 Mes transferts</a>
+            <div class="sb-section">Identité</div>
+            <a href="kyc-upload.xhtml"     class="sb-link active">📄 Documents KYC</a>
+            <a href="documents.xhtml"      class="sb-link">📁 Mes documents</a>
+            <div class="sb-section">Compte</div>
+            <h:form style="margin:0">
+                <h:commandLink action="#{loginBean.logout}" styleClass="sb-link" style="border:none;background:transparent;cursor:pointer;width:100%;text-align:left">
+                    🚪 Déconnexion
+                </h:commandLink>
             </h:form>
-        </div>
-
-        <div class="kyc-main-content">
-            <h2 class="page-title" style="color: #f8fafc; font-size: 1.5rem; margin-bottom: 20px;">Suivi de mes soumissions</h2>
-            
-            <h:panelGroup id="documentsPanel">
-                <p:dataTable value="#{kycBean.myDocuments}" 
-                             var="doc" 
-                             styleClass="custom-dark-table"
-                             emptyMessage="Vous n'avez pas encore soumis de document réglementaire.">
-                             
-                    <p:column headerText="Nature du document" style="width: 25%;">
-                        <h:outputText value="#{doc.type}" style="font-weight: 600; color: #e2e8f0;" />
-                    </p:column>
-                    
-                    <p:column headerText="Nom du fichier importé" style="width: 35%;">
-                        <h:outputText value="#{doc.originalName}" style="font-family: monospace; color: #cbd5e1;" />
-                    </p:column>
-                    
-                    <p:column headerText="Statut actuel" style="width: 15%; text-align: center;">
-                        <span class="status-badge #{doc.status == 'VALIDATED' ? 'badge-green' : (doc.status == 'REJECTED' ? 'badge-red' : 'badge-yellow')}">
-                            <h:outputText value="#{doc.status}" />
-                        </span>
-                    </p:column>
-                    
-                    <p:column headerText="Soumis le" style="width: 25%;">
-                        <h:outputText value="#{doc.uploadedAt}">
-                            <f:convertDateTime pattern="dd MMMM yyyy 'à' HH:mm" type="localDateTime" locale="fr_FR" />
-                        </h:outputText>
-                    </p:column>
-                    
-                </p:dataTable>
-            </h:panelGroup>
-        </div>
-        
+        </aside>
+        <main class="main">
+            <div class="page-title">Vérification d'identité (KYC)</div>
+            <div class="page-sub">Soumettez vos pièces justificatives pour valider votre compte</div>
+            <div class="grid">
+                <!-- Upload form -->
+                <div class="card">
+                    <div class="card-title">📤 Soumettre un document</div>
+                    <div class="card-sub">Formats acceptés : PDF, JPEG, PNG. Max 10MB par fichier.</div>
+                    <h:form enctype="multipart/form-data">
+                        <h:messages showSummary="true" showDetail="false"
+                            infoClass="msg msg-success" errorClass="msg msg-error"/>
+                        <div class="field">
+                            <label>Type de document</label>
+                            <h:selectOneMenu value="#{kycBean.selectedType}" required="true">
+                                <f:selectItem itemValue="" itemLabel="— Choisir un type —"/>
+                                <f:selectItem itemValue="CNI_RECTO"        itemLabel="CIN Recto"/>
+                                <f:selectItem itemValue="CNI_VERSO"        itemLabel="CIN Verso"/>
+                                <f:selectItem itemValue="PASSPORT"         itemLabel="Passeport"/>
+                                <f:selectItem itemValue="PROOF_OF_ADDRESS" itemLabel="Justificatif de domicile"/>
+                            </h:selectOneMenu>
+                        </div>
+                        <div class="field">
+                            <label>Fichier (PDF, JPEG, PNG)</label>
+                            <p:fileUpload value="#{kycBean.uploadedFile}" mode="simple"
+                                accept=".pdf,.jpg,.jpeg,.png" required="true" style="padding:5px"/>
+                        </div>
+                        <h:commandButton value="Envoyer le document" action="#{kycBean.uploadDocument}"
+                            styleClass="btn-upload"/>
+                    </h:form>
+                </div>
+                <!-- Documents list -->
+                <div class="card">
+                    <div class="card-title">📋 Mes soumissions</div>
+                    <div class="card-sub">Suivez l'état de validation de vos documents.</div>
+                    <h:panelGroup rendered="#{empty kycBean.myDocuments}" layout="block">
+                        <div class="empty">Aucun document soumis pour l'instant.</div>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{not empty kycBean.myDocuments}" layout="block">
+                        <table>
+                            <tr><th>Type</th><th>Fichier</th><th>Statut</th><th>Date</th></tr>
+                            <ui:repeat xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                                       value="#{kycBean.myDocuments}" var="doc">
+                                <tr>
+                                    <td style="font-weight:500">#{doc.type}</td>
+                                    <td style="font-family:monospace;font-size:12px">#{doc.originalName}</td>
+                                    <td>
+                                        <span class="badge badge-#{doc.status.name().toLowerCase()}">
+                                            #{doc.status.name() == 'PENDING' ? '⏳ En attente' : (doc.status.name() == 'VALIDATED' ? '✅ Validé' : '❌ Rejeté')}
+                                        </span>
+                                    </td>
+                                    <td style="font-size:12px;color:#6e7681">#{doc.uploadedAt}</td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </h:panelGroup>
+                </div>
+            </div>
+        </main>
     </div>
 </h:body>
 </html>

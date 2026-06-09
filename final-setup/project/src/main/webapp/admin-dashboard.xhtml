@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>TransferPro — Administration</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:#0d1117;font-family:'Segoe UI',sans-serif;color:#c9d1d9;min-height:100vh}
+        .nav{background:#161b22;border-bottom:1px solid #30363d;padding:0 28px;height:58px;
+             display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-brand{color:#f85149;font-size:18px;font-weight:700;text-decoration:none}
+        .nav-right{display:flex;align-items:center;gap:14px;font-size:14px;color:#8b949e}
+        .nav-right span{color:#e6edf3;font-weight:500}
+        .badge-admin{background:#f8514922;color:#f85149;border:1px solid #f85149;padding:2px 9px;border-radius:4px;font-size:11px;font-weight:600}
+        .btn-sm{background:transparent;border:1px solid #30363d;color:#8b949e;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:13px}
+        .layout{display:flex;min-height:calc(100vh - 58px)}
+        .sidebar{width:220px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;flex-shrink:0}
+        .sb-section{padding:0 16px;margin:16px 0 6px;font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.8px}
+        .sb-link{display:flex;align-items:center;gap:10px;padding:9px 20px;color:#8b949e;text-decoration:none;font-size:14px;border-left:3px solid transparent;transition:.15s}
+        .sb-link:hover,.sb-link.active{background:#21262d;color:#e6edf3;border-left-color:#f85149}
+        .main{flex:1;padding:28px 32px;overflow:auto}
+        .page-title{font-size:22px;font-weight:700;color:#e6edf3;margin-bottom:4px}
+        .page-sub{font-size:13px;color:#6e7681;margin-bottom:24px}
+        .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+        .stat{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:18px 20px;position:relative;overflow:hidden}
+        .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+        .stat-red::before{background:#f85149}.stat-blue::before{background:#58a6ff}.stat-green::before{background:#3fb950}.stat-amber::before{background:#d29922}
+        .stat-label{font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+        .stat-val{font-size:28px;font-weight:700}
+        .c-red{color:#f85149}.c-blue{color:#58a6ff}.c-green{color:#3fb950}.c-amber{color:#d29922}
+        .tabs{display:flex;gap:2px;background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:4px;margin-bottom:20px;width:fit-content}
+        .tab-btn{padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:#8b949e;transition:.15s}
+        .tab-btn.active{background:#161b22;color:#e6edf3}
+        .tab-pane{display:none}.tab-pane.active{display:block}
+        .card{background:#161b22;border:1px solid #30363d;border-radius:10px;overflow:hidden;margin-bottom:24px}
+        .card-header{padding:14px 20px;border-bottom:1px solid #21262d;display:flex;align-items:center;justify-content:space-between}
+        .card-title{font-size:15px;font-weight:600;color:#e6edf3}
+        .card-count{background:#21262d;color:#8b949e;padding:2px 8px;border-radius:4px;font-size:12px}
+        table{width:100%;border-collapse:collapse}
+        th{background:#0d1117;color:#58a6ff;padding:11px 16px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #30363d}
+        td{padding:12px 16px;border-bottom:1px solid #21262d;font-size:13px;color:#c9d1d9;vertical-align:middle}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:#1c2128}
+        .badge{display:inline-block;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}
+        .badge-paid{background:rgba(63,185,80,.15);color:#3fb950;border:1px solid #238636}
+        .badge-available{background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid #1f6feb}
+        .badge-pending{background:rgba(210,153,34,.15);color:#d29922;border:1px solid #9e6a03}
+        .badge-cancelled{background:rgba(248,81,73,.15);color:#f85149;border:1px solid #f85149}
+        .badge-verified{background:rgba(63,185,80,.15);color:#3fb950;border:1px solid #238636}
+        .badge-active{background:rgba(63,185,80,.15);color:#3fb950;border:1px solid #238636}
+        .badge-suspended{background:rgba(248,81,73,.15);color:#f85149;border:1px solid #f85149}
+        .btn{display:inline-flex;align-items:center;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;border:none;transition:.15s;margin-right:5px}
+        .btn-validate{background:#238636;color:white}.btn-validate:hover{background:#2ea043}
+        .btn-reject{background:transparent;color:#f85149;border:1px solid #f85149}.btn-reject:hover{background:#f8514922}
+        .btn-confirm{background:#1f6feb;color:white}.btn-avail{background:#6e40c9;color:white}
+        .btn-suspend{background:transparent;color:#d29922;border:1px solid #9e6a03}
+        .btn-activate{background:#238636;color:white}
+        .msg-box{border-radius:6px;padding:10px 14px;font-size:13px;margin-bottom:16px}
+        .msg-success{background:rgba(63,185,80,.1);border:1px solid #238636;color:#3fb950}
+        .msg-error{background:rgba(248,81,73,.1);border:1px solid #f85149;color:#f85149}
+        .msg-warn{background:rgba(210,153,34,.1);border:1px solid #9e6a03;color:#d29922}
+        .empty-state{padding:40px;text-align:center;color:#6e7681;font-size:14px}
+        .code-col{font-family:monospace;font-size:12px;color:#8b949e}
+        .amount-col{font-weight:600;color:#58a6ff}
+        .sub-text{font-size:11px;color:#6e7681;margin-top:2px}
+    </style>
+    <script>
+        function showTab(id,btn){
+            document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+            document.getElementById('tab-'+id).classList.add('active');
+            btn.classList.add('active');
+        }
+    </script>
+</h:head>
+<h:body>
+    <nav class="nav">
+        <a class="nav-brand" href="admin-dashboard.xhtml">⚙️ TransferPro Admin</a>
+        <div class="nav-right">
+            <span>#{sessionScope.userFullName}</span>
+            <span class="badge-admin">ADMIN</span>
+            <h:form style="margin:0"><h:commandButton value="Déconnexion" action="#{loginBean.logout}" styleClass="btn-sm"/></h:form>
+        </div>
+    </nav>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sb-section">Admin</div>
+            <a href="admin-dashboard.xhtml" class="sb-link active">🛡️ Tableau de bord</a>
+            <a href="receipts.xhtml"         class="sb-link">💸 Tous les transferts</a>
+            <div class="sb-section">Navigation</div>
+            <a href="user-dashboard.xhtml"   class="sb-link">🏠 Espace utilisateur</a>
+        </aside>
+        <main class="main">
+            <div class="page-title">Tableau de bord administrateur</div>
+            <div class="page-sub">KYC · Transferts · Utilisateurs</div>
+            <div class="stats">
+                <div class="stat stat-red"><div class="stat-label">KYC en attente</div><div class="stat-val c-red">#{adminBean.pendingKycCount}</div></div>
+                <div class="stat stat-blue"><div class="stat-label">Utilisateurs actifs</div><div class="stat-val c-blue">#{adminBean.totalUsers}</div></div>
+                <div class="stat stat-green"><div class="stat-label">Transferts récents</div><div class="stat-val c-green">#{adminBean.totalTransfersCount}</div></div>
+                <div class="stat stat-amber"><div class="stat-label">Volume traité</div><div class="stat-val c-amber" style="font-size:18px">#{adminBean.totalVolume} MAD</div></div>
+            </div>
+            <h:form id="adminForm">
+                <h:messages globalOnly="true" layout="list" infoClass="msg-box msg-success" errorClass="msg-box msg-error" warnClass="msg-box msg-warn"/>
+                <div class="tabs">
+                    <button class="tab-btn active"  onclick="showTab('kyc',this)"       type="button">📄 KYC (#{adminBean.pendingKycCount})</button>
+                    <button class="tab-btn"          onclick="showTab('transfers',this)" type="button">💸 Transferts</button>
+                    <button class="tab-btn"          onclick="showTab('users',this)"     type="button">👥 Utilisateurs</button>
+                </div>
+
+                <!-- KYC Tab -->
+                <div id="tab-kyc" class="tab-pane active">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Documents KYC à valider</span>
+                            <span class="card-count">#{adminBean.pendingKycCount} en attente</span>
+                        </div>
+                        <h:panelGroup rendered="#{empty adminBean.pendingDocuments}" layout="block">
+                            <div class="empty-state">✅ Aucun document en attente</div>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{not empty adminBean.pendingDocuments}" layout="block">
+                            <table>
+                                <tr><th>Utilisateur</th><th>Type</th><th>Fichier</th><th>Soumis le</th><th>Actions</th></tr>
+                                <ui:repeat value="#{adminBean.pendingDocuments}" var="doc">
+                                    <tr>
+                                        <td><div>#{doc.owner != null ? doc.owner.firstName.concat(' ').concat(doc.owner.lastName) : 'N/A'}</div><div class="sub-text">#{doc.owner != null ? doc.owner.email : ''}</div></td>
+                                        <td style="font-weight:500">#{doc.type}</td>
+                                        <td class="code-col">#{doc.originalName}</td>
+                                        <td style="color:#6e7681;font-size:12px">#{adminBean.formatDate(doc.uploadedAt)}</td>
+                                        <td>
+                                            <h:commandButton value="✓ Valider" styleClass="btn btn-validate"
+                                                action="#{adminBean.validateDocument(doc.id)}"
+                                                onclick="return confirm('Valider ce document ?')"/>
+                                            <h:commandButton value="✗ Rejeter" styleClass="btn btn-reject"
+                                                action="#{adminBean.rejectDocument(doc.id)}"
+                                                onclick="return confirm('Rejeter ce document ?')"/>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                            </table>
+                        </h:panelGroup>
+                    </div>
+                </div>
+
+                <!-- Transfers Tab -->
+                <div id="tab-transfers" class="tab-pane">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Gestion des transferts</span>
+                            <span class="card-count">50 derniers</span>
+                        </div>
+                        <h:panelGroup rendered="#{empty adminBean.recentTransfers}" layout="block">
+                            <div class="empty-state">Aucun transfert trouvé</div>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{not empty adminBean.recentTransfers}" layout="block">
+                            <table>
+                                <tr><th>Référence</th><th>Expéditeur</th><th>Bénéficiaire</th><th>Montant</th><th>Date</th><th>Statut</th><th>Actions</th></tr>
+                                <ui:repeat value="#{adminBean.recentTransfers}" var="t">
+                                    <tr>
+                                        <td class="code-col">#{t.trackingCode}</td>
+                                        <td>#{t.senderName}</td>
+                                        <td><div>#{t.receiverName}</div><div class="sub-text">#{t.receiverPhone}</div></td>
+                                        <td class="amount-col">#{t.amount} MAD</td>
+                                        <td style="color:#6e7681;font-size:12px">#{adminBean.formatDate(t.createdAt)}</td>
+                                        <td><span class="badge #{adminBean.getTransferStatusClass(t)}">#{adminBean.getTransferStatusLabel(t)}</span></td>
+                                        <td>
+                                            <h:panelGroup rendered="#{t.status.name() == 'PENDING'}" layout="block">
+                                                <h:commandButton value="Confirmer" styleClass="btn btn-confirm"
+                                                    action="#{adminBean.confirmTransfer(t.trackingCode)}"
+                                                    onclick="return confirm('Confirmer ?')"/>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{t.status.name() == 'CONFIRMED'}" layout="block">
+                                                <h:commandButton value="Rendre disponible" styleClass="btn btn-avail"
+                                                    action="#{adminBean.makeAvailable(t.trackingCode)}"
+                                                    onclick="return confirm('Rendre disponible ?')"/>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{t.status.name() != 'PENDING' and t.status.name() != 'CONFIRMED'}" layout="block">
+                                                <span style="color:#6e7681;font-size:12px">—</span>
+                                            </h:panelGroup>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                            </table>
+                        </h:panelGroup>
+                    </div>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="tab-users" class="tab-pane">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Comptes utilisateurs</span>
+                            <span class="card-count">#{adminBean.totalUsers} actifs</span>
+                        </div>
+                        <h:panelGroup rendered="#{empty adminBean.allUsers}" layout="block">
+                            <div class="empty-state">Aucun utilisateur trouvé</div>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{not empty adminBean.allUsers}" layout="block">
+                            <table>
+                                <tr><th>Utilisateur</th><th>Téléphone</th><th>Rôle</th><th>KYC</th><th>Statut</th><th>Actions</th></tr>
+                                <ui:repeat value="#{adminBean.allUsers}" var="u">
+                                    <tr>
+                                        <td><div style="font-weight:500">#{u.firstName} #{u.lastName}</div><div class="sub-text">#{u.email}</div></td>
+                                        <td style="font-family:monospace;font-size:12px">#{u.phone}</td>
+                                        <td><span class="badge #{u.role.name() == 'ADMIN' ? 'badge-cancelled' : 'badge-pending'}">#{u.role}</span></td>
+                                        <td><span class="badge #{u.kycStatus.name() == 'VERIFIED' ? 'badge-verified' : (u.kycStatus.name() == 'REJECTED' ? 'badge-cancelled' : 'badge-pending')}">#{u.kycStatus.name() == 'VERIFIED' ? '✓ Vérifié' : (u.kycStatus.name() == 'REJECTED' ? '✗ Rejeté' : '⏳ En attente')}</span></td>
+                                        <td><span class="badge #{u.status.name() == 'ACTIVE' ? 'badge-active' : 'badge-suspended'}">#{u.status}</span></td>
+                                        <td>
+                                            <h:commandButton value="Suspendre" styleClass="btn btn-suspend"
+                                                rendered="#{u.status.name() == 'ACTIVE'}"
+                                                action="#{adminBean.suspendUser(u.id)}"
+                                                onclick="return confirm('Suspendre ?')"/>
+                                            <h:commandButton value="Réactiver" styleClass="btn btn-activate"
+                                                rendered="#{u.status.name() != 'ACTIVE'}"
+                                                action="#{adminBean.activateUser(u.id)}"/>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                            </table>
+                        </h:panelGroup>
+                    </div>
+                </div>
+            </h:form>
+        </main>
+    </div>
+</h:body>
+</html>

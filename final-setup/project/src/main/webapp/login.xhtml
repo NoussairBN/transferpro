@@ -4,108 +4,207 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-    <title>TransferPro - Connexion</title>
-    <h:outputStylesheet library="css" name="style.css"/>
+    <title>TransferPro — Connexion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background: #0d1117;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{
+            background:#0d1117;
+            font-family:'Segoe UI',sans-serif;
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            padding:24px;
         }
-        .login-card {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            padding: 40px;
-            width: 420px;
+
+        /* Brand header above card */
+        .brand{text-align:center;margin-bottom:28px}
+        .brand-logo{font-size:36px;margin-bottom:8px}
+        .brand-name{font-size:28px;font-weight:700;color:#58a6ff;letter-spacing:-0.5px}
+        .brand-tagline{font-size:14px;color:#6e7681;margin-top:4px}
+
+        /* Card */
+        .card{
+            background:#161b22;
+            border:1px solid #30363d;
+            border-radius:14px;
+            width:100%;
+            max-width:440px;
+            overflow:hidden;
         }
-        .login-card h1 {
-            color: #58a6ff;
-            font-size: 28px;
-            margin-bottom: 6px;
+
+        /* Tabs */
+        .tabs{display:flex;border-bottom:1px solid #30363d}
+        .tab{flex:1;padding:16px;text-align:center;cursor:pointer;font-size:14px;
+             font-weight:500;color:#6e7681;border-bottom:2px solid transparent;
+             background:transparent;border-top:none;border-left:none;border-right:none;
+             transition:.2s;font-family:inherit}
+        .tab:hover{color:#c9d1d9;background:#1c2128}
+        .tab.active{color:#58a6ff;border-bottom-color:#58a6ff;background:#161b22}
+
+        /* Panels */
+        .panel{padding:28px;display:none}
+        .panel.active{display:block}
+
+        /* Fields */
+        .field{margin-bottom:16px}
+        .field label{display:block;color:#8b949e;font-size:12px;font-weight:500;
+                     text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+        .field input{
+            width:100%;padding:10px 14px;
+            background:#0d1117;border:1px solid #30363d;
+            border-radius:8px;color:#e6edf3;font-size:14px;
+            outline:none;transition:border-color .2s;font-family:inherit
         }
-        .login-card .subtitle {
-            color: #8b949e;
-            font-size: 14px;
-            margin-bottom: 28px;
+        .field input:focus{border-color:#58a6ff}
+        .field input::placeholder{color:#484f58}
+        .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+        /* Buttons */
+        .btn-submit{
+            width:100%;padding:12px;border:none;border-radius:8px;
+            font-size:15px;font-weight:600;cursor:pointer;
+            font-family:inherit;transition:.2s;margin-top:4px
         }
-        .field {
-            margin-bottom: 18px;
-        }
-        .field label {
-            display: block;
-            color: #c9d1d9;
-            font-size: 13px;
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-        .field input {
-            width: 100%;
-            padding: 10px 14px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            color: #c9d1d9;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .field input:focus { border-color: #58a6ff; }
-        .btn-login {
-            width: 100%;
-            padding: 11px;
-            background: #238636;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-        .btn-login:hover { background: #2ea043; }
-        .error-msg {
-            background: #2d1a1a;
-            border: 1px solid #f85149;
-            border-radius: 6px;
-            color: #f85149;
-            padding: 10px 14px;
-            font-size: 13px;
-            margin-top: 14px;
-        }
+        .btn-login{background:#238636;color:white}
+        .btn-login:hover{background:#2ea043}
+        .btn-register{background:#1f6feb;color:white}
+        .btn-register:hover{background:#388bfd}
+
+        /* Messages */
+        .msg{border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px}
+        .msg-error{background:rgba(248,81,73,.1);border:1px solid #f85149;color:#f85149}
+        .msg-success{background:rgba(63,185,80,.1);border:1px solid #238636;color:#3fb950}
+
+        /* Divider */
+        .divider{border:none;border-top:1px solid #21262d;margin:16px 0}
+
+        /* Helper text */
+        .helper{font-size:12px;color:#6e7681;text-align:center;margin-top:16px}
+        .helper a{color:#58a6ff;text-decoration:none;cursor:pointer}
+        .helper a:hover{text-decoration:underline}
+
+        /* Password strength hint */
+        .hint{font-size:11px;color:#6e7681;margin-top:4px}
+
+        /* Footer */
+        .footer{margin-top:24px;text-align:center;font-size:12px;color:#484f58}
+        .footer span{color:#58a6ff}
     </style>
+    <script>
+        function showTab(id) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.add('active');
+            document.getElementById('panel-' + id).classList.add('active');
+        }
+    </script>
 </h:head>
 <h:body>
-    <div class="login-card">
-        <h1>TransferPro</h1>
-        <p class="subtitle">Connectez-vous à votre espace</p>
 
-        <h:form id="loginForm">
-            <div class="field">
-                <h:outputLabel for="email" value="Adresse email"/>
-                <h:inputText id="email"
-                             value="#{loginBean.email}"
-                             placeholder="exemple@domaine.ma"
-                             required="true"/>
-            </div>
-            <div class="field">
-                <h:outputLabel for="password" value="Mot de passe"/>
-                <h:inputSecret id="password"
-                               value="#{loginBean.password}"
-                               placeholder="••••••••"
-                               required="true"/>
-            </div>
-            <h:commandButton value="Se connecter"
-                             action="#{loginBean.login}"
-                             styleClass="btn-login"/>
-            <h:messages styleClass="error-msg"
-                        showSummary="true"
-                        showDetail="false"/>
-        </h:form>
+    <!-- Brand -->
+    <div class="brand">
+        <div class="brand-logo">⚡</div>
+        <div class="brand-name">TransferPro</div>
+        <div class="brand-tagline">Envoyez de l'argent en toute sécurité</div>
     </div>
+
+    <!-- Card -->
+    <div class="card">
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" id="tab-login"    onclick="showTab('login')"    type="button">Se connecter</button>
+            <button class="tab"        id="tab-register" onclick="showTab('register')" type="button">Créer un compte</button>
+        </div>
+
+        <!-- LOGIN PANEL -->
+        <div class="panel active" id="panel-login">
+            <h:form id="loginForm">
+                <h:messages for="loginForm" layout="list" errorClass="msg msg-error"
+                    showSummary="true" showDetail="false"/>
+
+                <div class="field">
+                    <label>Adresse email</label>
+                    <h:inputText value="#{loginBean.email}" placeholder="exemple@domaine.ma"
+                        required="true" autocomplete="email"/>
+                </div>
+                <div class="field">
+                    <label>Mot de passe</label>
+                    <h:inputSecret value="#{loginBean.password}" placeholder="••••••••"
+                        required="true" autocomplete="current-password"/>
+                </div>
+
+                <h:commandButton value="Se connecter →" action="#{loginBean.login}"
+                    styleClass="btn-submit btn-login"/>
+
+                <div class="helper">
+                    Pas encore de compte ?
+                    <a onclick="showTab('register')">Créer un compte gratuitement</a>
+                </div>
+            </h:form>
+        </div>
+
+        <!-- REGISTER PANEL -->
+        <div class="panel" id="panel-register">
+            <h:form id="registerForm">
+                <h:messages for="registerForm" layout="list" errorClass="msg msg-error"
+                    showSummary="true" showDetail="false"/>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label>Prénom *</label>
+                        <h:inputText value="#{loginBean.regFirstName}" placeholder="Hassan" required="true"/>
+                    </div>
+                    <div class="field">
+                        <label>Nom *</label>
+                        <h:inputText value="#{loginBean.regLastName}" placeholder="Alami" required="true"/>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Adresse email *</label>
+                    <h:inputText value="#{loginBean.regEmail}" placeholder="hassan@exemple.ma"
+                        required="true" autocomplete="email"/>
+                </div>
+
+                <div class="field">
+                    <label>Téléphone *</label>
+                    <h:inputText value="#{loginBean.regPhone}" placeholder="06XXXXXXXX" required="true"/>
+                </div>
+
+                <hr class="divider"/>
+
+                <div class="field">
+                    <label>Mot de passe *</label>
+                    <h:inputSecret value="#{loginBean.regPassword}" placeholder="Minimum 8 caractères"
+                        required="true" autocomplete="new-password"/>
+                    <div class="hint">Au moins 8 caractères</div>
+                </div>
+                <div class="field">
+                    <label>Confirmer le mot de passe *</label>
+                    <h:inputSecret value="#{loginBean.regPasswordConfirm}" placeholder="••••••••"
+                        required="true" autocomplete="new-password"/>
+                </div>
+
+                <h:commandButton value="Créer mon compte →" action="#{loginBean.register}"
+                    styleClass="btn-submit btn-register"/>
+
+                <div class="helper">
+                    Déjà un compte ?
+                    <a onclick="showTab('login')">Se connecter</a>
+                </div>
+            </h:form>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Transferts sécurisés · <span>TransferPro</span> © 2026
+    </div>
+
 </h:body>
 </html>

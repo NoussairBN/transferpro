@@ -238,7 +238,14 @@
             <a href="documents.xhtml">
                 <span class="icon">📁</span> Mes documents
             </a>
-
+            <a href="receipts.xhtml">
+                <span class="icon">💸</span> Mes transferts
+            </a>
+<h:panelGroup rendered="#{sessionScope.userRole == 'ADMIN'}" layout="block">
+            <a href="admin-dashboard.xhtml" style="color:#f59e0b;">
+                <span class="icon">⚙️</span> Administration
+            </a>
+</h:panelGroup>
             <div class="sidebar-section">Compte</div>
             <a href="#">
                 <span class="icon">👤</span> Mon profil

@@ -1,185 +1,145 @@
 package ma.transfert.jsf;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.servlet.http.HttpServletRequest;
+import ma.transfert.dao.TransferDAO;
+import ma.transfert.dto.TransferDTO;
+import ma.transfert.model.Transfer;
+import ma.transfert.service.TransferService;
+import ma.transfert.service.doc.PdfReceiptService;
+
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import ma.transfert.dto.TransferDTO;
-import ma.transfert.service.TransferService;
-import ma.transfert.service.doc.PdfReceiptService;
 
-@Named
+@Named("receiptBean")
 @ViewScoped
 public class ReceiptBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    @Inject
+    @EJB
+    private TransferDAO transferDAO;
+
+    @jakarta.inject.Inject
     private PdfReceiptService pdfService;
-    
-    @Inject
+
+    @jakarta.inject.Inject
     private TransferService transferService;
 
     private List<TransferDTO> userTransfers;
     private TransferDTO selectedTransfer;
-    private Long currentUserId;
 
     @PostConstruct
     public void init() {
-        loadCurrentUserId();
-        loadUserTransfers();
-    }
-    
-    private void loadCurrentUserId() {
-        try {
-            // Try to get user ID from session
-            FacesContext context = FacesContext.getCurrentInstance();
-            if (context != null) {
-                HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-                Object userIdObj = request.getSession().getAttribute("userId");
-                
-                if (userIdObj instanceof Long) {
-                    currentUserId = (Long) userIdObj;
-                } else if (userIdObj instanceof String) {
-                    currentUserId = Long.parseLong((String) userIdObj);
-                } else {
-                    // Fallback: try to get from a different session attribute
-                    userIdObj = context.getExternalContext().getSessionMap().get("currentUserId");
-                    if (userIdObj instanceof Long) {
-                        currentUserId = (Long) userIdObj;
-                    } else {
-                        // If no user ID, try to get transfers for demo (agency 1)
-                        currentUserId = null;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            currentUserId = null;
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        Long userId = (Long) ctx.getExternalContext().getSessionMap().get("userId");
+        String role  = (String) ctx.getExternalContext().getSessionMap().get("userRole");
+
+        if (userId == null) {
+            try { ctx.getExternalContext().redirect("login.xhtml"); } catch (Exception e) { e.printStackTrace(); }
+            return;
         }
-    }
-    
-    private void loadUserTransfers() {
+
         try {
-            if (currentUserId != null) {
-                // Get transfers for specific user (page 0, size 100)
-                // Note: getTransfersByUser expects offset and limit
-                // We need to add a method in TransferService or use existing
-                userTransfers = transferService.getTransfersByAgency(1L, 0, 100);
-                // If you have a method to get by user, use that instead
+            List<Transfer> transfers;
+            if ("ADMIN".equals(role)) {
+                transfers = transferDAO.findAll(0, 100);
             } else {
-                // Fallback: show transfers from agency 1 (first agency)
-                userTransfers = transferService.getTransfersByAgency(1L, 0, 100);
+                transfers = transferDAO.findByUser(userId, 0, 100);
+            }
+            userTransfers = new ArrayList<>();
+            for (Transfer t : transfers) {
+                userTransfers.add(toDTO(t));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            userTransfers = List.of(); // Empty list if error
+            userTransfers = List.of();
         }
+    }
+
+    private TransferDTO toDTO(Transfer t) {
+        TransferDTO dto = new TransferDTO();
+        dto.setTrackingCode(t.getTrackingCode());
+        dto.setAmount(t.getAmount());
+        dto.setFees(t.getFees());
+        dto.setStatus(t.getStatus());
+        dto.setSenderName(t.getSenderName());
+        dto.setReceiverName(t.getReceiverName());
+        dto.setReceiverPhone(t.getReceiverPhone());
+        dto.setCreatedAt(t.getCreatedAt());
+        dto.setExpiresAt(t.getExpiresAt());
+        dto.setPaidAt(t.getPaidAt());
+        if (t.getSendingAgency() != null) dto.setSendingAgencyName(t.getSendingAgency().getName());
+        return dto;
     }
 
     public void downloadReceipt(TransferDTO transfer) {
         try {
-            // Get the full transfer entity using tracking code
-            TransferDTO fullTransfer = transferService.getTransferByTrackingCode(transfer.getTrackingCode());
-            
-            // Generate PDF for the transfer
-            Path pdfPath = pdfService.generateReceiptByTrackingCode(fullTransfer.getTrackingCode());
-            
-            FacesContext facesContext = FacesContext.getCurrentInstance();
-            var response = facesContext.getExternalContext();
-            
-            response.responseReset();
-            response.setResponseContentType("application/pdf");
-            
-            long fileSize = Files.size(pdfPath);
-            response.setResponseContentLength((int) fileSize);
-            
-            response.setResponseHeader("Content-Disposition", 
-                "attachment;filename=\"Recu_" + transfer.getTrackingCode() + ".pdf\"");
-            
-            OutputStream os = response.getResponseOutputStream();
+            Path pdfPath = pdfService.generateReceiptByTrackingCode(transfer.getTrackingCode());
+            FacesContext ctx = FacesContext.getCurrentInstance();
+            var ext = ctx.getExternalContext();
+            ext.responseReset();
+            ext.setResponseContentType("application/pdf");
+            ext.setResponseContentLength((int) Files.size(pdfPath));
+            ext.setResponseHeader("Content-Disposition", "attachment;filename=\"Recu_" + transfer.getTrackingCode() + ".pdf\"");
+            OutputStream os = ext.getResponseOutputStream();
             Files.copy(pdfPath, os);
-            
             os.flush();
-            facesContext.responseComplete();
-            
+            ctx.responseComplete();
         } catch (Exception e) {
             e.printStackTrace();
-            // Add faces message for error
-            FacesContext.getCurrentInstance().addMessage(null, 
+            FacesContext.getCurrentInstance().addMessage(null,
                 new jakarta.faces.application.FacesMessage(
-                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR, 
-                    "Erreur", 
-                    "Impossible de générer le reçu: " + e.getMessage()));
-        }
-    }
-    
-    // Helper method to get status badge style
-    public String getStatusBadgeStyle(TransferDTO transfer) {
-        if (transfer == null || transfer.getStatus() == null) return "badge-warning";
-        
-        switch (transfer.getStatus()) {
-            case PAID:
-                return "badge-success";
-            case AVAILABLE:
-                return "badge-info";
-            case EXPIRED:
-                return "badge-danger";
-            case CANCELLED:
-                return "badge-danger";
-            case CONFIRMED:
-                return "badge-info";
-            default:
-                return "badge-warning";
-        }
-    }
-    
-    public String getStatusLabel(TransferDTO transfer) {
-        if (transfer == null || transfer.getStatus() == null) return "INCONNU";
-        
-        switch (transfer.getStatus()) {
-            case PAID:
-                return "PAYÉ";
-            case AVAILABLE:
-                return "DISPONIBLE";
-            case EXPIRED:
-                return "EXPIRÉ";
-            case CANCELLED:
-                return "ANNULÉ";
-            case CONFIRMED:
-                return "CONFIRMÉ";
-            case PENDING:
-                return "EN ATTENTE";
-            default:
-                return transfer.getStatus().name();
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Erreur PDF", e.getMessage()));
         }
     }
 
-    // Getters / Setters
-    public List<TransferDTO> getUserTransfers() { 
-        return userTransfers; 
+    public String formatDate(java.time.LocalDateTime dt) {
+        return dt != null ? dt.format(FMT) : "-";
     }
-    
-    public TransferDTO getSelectedTransfer() { 
-        return selectedTransfer; 
+
+    public String getStatusBadge(TransferDTO t) {
+        if (t == null || t.getStatus() == null) return "badge-warning";
+        return switch (t.getStatus()) {
+            case PAID      -> "badge-success";
+            case AVAILABLE, CONFIRMED -> "badge-info";
+            case EXPIRED, CANCELLED   -> "badge-danger";
+            default        -> "badge-warning";
+        };
     }
-    
-    public void setSelectedTransfer(TransferDTO selectedTransfer) { 
-        this.selectedTransfer = selectedTransfer; 
+
+    public String getStatusLabel(TransferDTO t) {
+        if (t == null || t.getStatus() == null) return "INCONNU";
+        return switch (t.getStatus()) {
+            case PAID      -> "PAYÉ";
+            case AVAILABLE -> "DISPONIBLE";
+            case CONFIRMED -> "CONFIRMÉ";
+            case PENDING   -> "EN ATTENTE";
+            case EXPIRED   -> "EXPIRÉ";
+            case CANCELLED -> "ANNULÉ";
+        };
     }
-    
-    public Long getCurrentUserId() {
-        return currentUserId;
+
+    public int getPaidCount() {
+        if (userTransfers == null) return 0;
+        return (int) userTransfers.stream().filter(t -> t.getStatus() != null && t.getStatus().name().equals("PAID")).count();
     }
-    
-    public void setCurrentUserId(Long currentUserId) {
-        this.currentUserId = currentUserId;
+    public int getPendingCount() {
+        if (userTransfers == null) return 0;
+        return (int) userTransfers.stream().filter(t -> t.getStatus() != null && !t.getStatus().name().equals("PAID") && !t.getStatus().name().equals("CANCELLED") && !t.getStatus().name().equals("EXPIRED")).count();
     }
+
+    public List<TransferDTO> getUserTransfers()  { return userTransfers; }
+    public TransferDTO getSelectedTransfer()      { return selectedTransfer; }
+    public void setSelectedTransfer(TransferDTO t){ this.selectedTransfer = t; }
 }

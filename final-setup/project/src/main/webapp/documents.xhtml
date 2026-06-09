@@ -3,121 +3,125 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
-
 <h:head>
-    <title>TransferPro - Mes Documents</title>
-    <h:outputStylesheet library="css" name="style.css"/>
+    <title>TransferPro — Mes Documents</title>
     <style>
-        /* Styles pour harmoniser la page avec le thème sombre global */
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .documents-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background-color: #1e293b;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .page-header {
-            border-bottom: 1px solid #334155;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-        .page-title {
-            color: #38bdf8;
-            margin: 0 0 8px 0;
-            font-size: 1.8rem;
-        }
-        .page-subtitle {
-            color: #94a3b8;
-            margin: 0;
-            font-size: 0.95rem;
-        }
-        /* Style des badges pour les statuts KYC/Documents */
-        .status-badge {
-            padding: 6px 14px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-block;
-            text-align: center;
-        }
-        .badge-yellow { background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid #f59e0b; }
-        .badge-green { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; }
-        .badge-red { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444; }
-        
-        /* Personnalisation de la DataTable PrimeFaces en mode sombre */
-        .ui-datatable.custom-dark-table .ui-datatable-header,
-        .ui-datatable.custom-dark-table th {
-            background-color: #0f172a !important;
-            color: #38bdf8 !important;
-            border-color: #334155 !important;
-            font-weight: 600;
-            padding: 15px !important;
-        }
-        .ui-datatable.custom-dark-table tr {
-            background-color: #1e293b !important;
-            color: #f8fafc !important;
-            transition: background-color 0.2s;
-        }
-        .ui-datatable.custom-dark-table tr:hover {
-            background-color: #24334d !important;
-        }
-        .ui-datatable.custom-dark-table td {
-            border-color: #334155 !important;
-            padding: 14px 15px !important;
-        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:#0d1117;font-family:'Segoe UI',sans-serif;color:#c9d1d9;min-height:100vh}
+        .nav{background:#161b22;border-bottom:1px solid #30363d;padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .nav-brand{color:#58a6ff;font-size:18px;font-weight:700;text-decoration:none}
+        .nav-right{display:flex;align-items:center;gap:14px;font-size:14px;color:#8b949e}
+        .nav-right span{color:#e6edf3;font-weight:500}
+        .btn-sm{background:transparent;border:1px solid #30363d;color:#8b949e;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:13px}
+        .layout{display:flex;min-height:calc(100vh - 58px)}
+        .sidebar{width:220px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;flex-shrink:0}
+        .sb-section{padding:0 16px;margin:16px 0 6px;font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.8px}
+        .sb-link{display:flex;align-items:center;gap:10px;padding:9px 20px;color:#8b949e;text-decoration:none;font-size:14px;border-left:3px solid transparent;transition:.15s}
+        .sb-link:hover,.sb-link.active{background:#21262d;color:#e6edf3;border-left-color:#58a6ff}
+        .main{flex:1;padding:28px 32px;overflow:auto}
+        .page-title{font-size:22px;font-weight:700;color:#e6edf3;margin-bottom:4px}
+        .page-sub{font-size:13px;color:#6e7681;margin-bottom:24px}
+        .header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+        .btn-action{padding:8px 16px;background:#1f6feb;color:white;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none}
+        .card{background:#161b22;border:1px solid #30363d;border-radius:10px;overflow:hidden}
+        .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+        .stat{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px 20px}
+        .stat-label{font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+        .stat-val{font-size:24px;font-weight:700}
+        .c-amber{color:#d29922}.c-green{color:#3fb950}.c-red{color:#f85149}
+        table{width:100%;border-collapse:collapse}
+        th{background:#0d1117;color:#58a6ff;padding:11px 16px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #30363d}
+        td{padding:13px 16px;border-bottom:1px solid #21262d;font-size:13px;color:#c9d1d9;vertical-align:middle}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:#1c2128}
+        .badge{display:inline-block;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}
+        .badge-pending  {background:rgba(210,153,34,.15);color:#d29922;border:1px solid #9e6a03}
+        .badge-validated{background:rgba(63,185,80,.15);color:#3fb950;border:1px solid #238636}
+        .badge-rejected {background:rgba(248,81,73,.15);color:#f85149;border:1px solid #f85149}
+        .empty{padding:48px;text-align:center;color:#6e7681}
+        .empty-icon{font-size:36px;margin-bottom:12px}
+        .comment{font-size:12px;color:#6e7681;font-style:italic}
     </style>
 </h:head>
-
 <h:body>
-    <div class="documents-container">
-        
-        <div class="page-header">
-            <h1 class="page-title">Gestion de vos Documents</h1>
-            <p class="page-subtitle">Consultez l'historique et l'état de validation de l'ensemble de vos pièces justificatives importées.</p>
+    <nav class="nav">
+        <a class="nav-brand" href="user-dashboard.xhtml">⚡ TransferPro</a>
+        <div class="nav-right">
+            <span>#{sessionScope.userFullName}</span>
+            <h:form style="margin:0"><h:commandButton value="Déconnexion" action="#{loginBean.logout}" styleClass="btn-sm"/></h:form>
         </div>
+    </nav>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sb-section">Mon espace</div>
+            <a href="user-dashboard.xhtml" class="sb-link">🏠 Tableau de bord</a>
+            <a href="receipts.xhtml"       class="sb-link">💸 Mes transferts</a>
+            <div class="sb-section">Identité</div>
+            <a href="kyc-upload.xhtml"     class="sb-link">📄 Documents KYC</a>
+            <a href="documents.xhtml"      class="sb-link active">📁 Mes documents</a>
+            <div class="sb-section">Compte</div>
+            <h:form style="margin:0">
+                <h:commandLink action="#{loginBean.logout}" styleClass="sb-link" style="border:none;background:transparent;cursor:pointer;width:100%;text-align:left">
+                    🚪 Déconnexion
+                </h:commandLink>
+            </h:form>
+        </aside>
+        <main class="main">
+            <div class="header-row">
+                <div>
+                    <div class="page-title">Mes Documents</div>
+                    <div class="page-sub" style="margin-bottom:0">Historique et état de validation de vos pièces justificatives</div>
+                </div>
+                <a href="kyc-upload.xhtml" class="btn-action">+ Soumettre un document</a>
+            </div>
 
-        <h:form id="docsForm">
-            <p:dataTable value="#{kycBean.myDocuments}" 
-                         var="doc" 
-                         styleClass="custom-dark-table"
-                         emptyMessage="Aucun document n'a été trouvé dans votre dossier."
-                         paginator="true" 
-                         rows="10"
-                         paginatorPosition="bottom"
-                         rowsPerPageTemplate="5,10,20">
-                         
-                <p:column headerText="Nature du justificatif" sortBy="#{doc.type}" style="width: 25%;">
-                    <h:outputText value="#{doc.type}" style="font-weight: 600; color: #e2e8f0;" />
-                </p:column>
-                
-                <p:column headerText="Nom d'origine du fichier" style="width: 35%;">
-                    <h:outputText value="#{doc.originalName}" style="font-family: monospace; color: #cbd5e1;" />
-                </p:column>
-                
-                <p:column headerText="Statut de conformité" style="width: 20%; text-align: center;">
-                    <span class="status-badge #{doc.status == 'VALIDATED' ? 'badge-green' : (doc.status == 'REJECTED' ? 'badge-red' : 'badge-yellow')}">
-                        <h:outputText value="#{doc.status}" />
-                    </span>
-                </p:column>
-                
-                <p:column headerText="Date d'importation" sortBy="#{doc.uploadedAt}" style="width: 20%;">
-                    <h:outputText value="#{doc.uploadedAt}">
-                        <f:convertDateTime pattern="dd MMMM yyyy 'à' HH:mm" type="localDateTime" locale="fr_FR" />
-                    </h:outputText>
-                </p:column>
-                
-            </p:dataTable>
-        </h:form>
-        
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">En attente</div>
+                    <div class="stat-val c-amber">#{kycBean.myDocuments != null ? kycBean.myDocuments.stream().filter(d -> d.status.name() == 'PENDING').count() : 0}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Validés</div>
+                    <div class="stat-val c-green">#{kycBean.myDocuments != null ? kycBean.myDocuments.stream().filter(d -> d.status.name() == 'VALIDATED').count() : 0}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Rejetés</div>
+                    <div class="stat-val c-red">#{kycBean.myDocuments != null ? kycBean.myDocuments.stream().filter(d -> d.status.name() == 'REJECTED').count() : 0}</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h:panelGroup rendered="#{empty kycBean.myDocuments}" layout="block">
+                    <div class="empty">
+                        <div class="empty-icon">📄</div>
+                        <div>Aucun document soumis.<br/>
+                            <a href="kyc-upload.xhtml" style="color:#58a6ff">Soumettre mes documents KYC →</a>
+                        </div>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{not empty kycBean.myDocuments}" layout="block">
+                    <table>
+                        <tr><th>Type</th><th>Fichier</th><th>Statut</th><th>Soumis le</th><th>Commentaire admin</th></tr>
+                        <ui:repeat value="#{kycBean.myDocuments}" var="doc">
+                            <tr>
+                                <td style="font-weight:500">#{doc.type}</td>
+                                <td style="font-family:monospace;font-size:12px">#{doc.originalName}</td>
+                                <td>
+                                    <span class="badge badge-#{doc.status.name().toLowerCase()}">
+                                        #{doc.status.name() == 'PENDING' ? '⏳ En attente' : (doc.status.name() == 'VALIDATED' ? '✅ Validé' : '❌ Rejeté')}
+                                    </span>
+                                </td>
+                                <td style="font-size:12px;color:#6e7681">#{doc.uploadedAt}</td>
+                                <td class="comment">#{not empty doc.adminComment ? doc.adminComment : '—'}</td>
+                            </tr>
+                        </ui:repeat>
+                    </table>
+                </h:panelGroup>
+            </div>
+        </main>
     </div>
 </h:body>
 </html>
